@@ -7,28 +7,34 @@ class CLI:
         # parser.add_argument("-")
         args = parser.parse_args()
         self.blockchain = None
-        self.user_role = args.type.lower()
-        self.user_id = None
+        self.user_type = args.type.lower()
+        self.patient_id = None
+        self.patient_name = None
+        self.doctor_id = None
+        self.doctor_name = None
+        self.patient_address = None
+        self.patient_phone = None
 
     def run(self):
+
         while True:
             self.display_menu()
             choice = input("Enter your choice: ").strip()
 
             if choice == "1":
-                if self.user_role == "patient":
+                if self.user_type == "patient":
                     print("Error: Insufficient permission")
                     continue
                 self.create_record()
             elif choice == "2":
                 self.view_records()
             elif choice == "3":
-                if self.user_role == "patient":
+                if self.user_type == "patient":
                     print("Error: Insufficient permission")
                     continue
                 self.update_record()
             elif choice == "4":
-                if self.user_role == "patient":
+                if self.user_type == "patient":
                     print("Error: Insufficient permission")
                     continue
                 self.delete_record()
@@ -38,7 +44,17 @@ class CLI:
             else:
                 print("Invalid choice. Please try again.")
 
-
+    def fill_details(self):
+        if self.user_type == "patient":
+            self.patient_id = int(input("Enter id: "))
+            self.patient_name = input("Enter name: ")
+        else:
+            self.doctor_id = int(input("Enter id: "))
+            self.doctor_name = input("Enter name: ")
+            self.patient_id = int(input("Enter patient id: "))
+            self.patient_name = input("Enter patient name: ")
+            self.patient_phone = input("Enter patient's phone number: ")
+            self.patient_address = input("Enter patient's address: ")
 
     def display_menu(self):
         print("\n==== Electronic Health Records CLI ====")
