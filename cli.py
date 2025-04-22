@@ -16,7 +16,7 @@ class CLI:
         self.patient_phone = None
 
     def run(self):
-
+        self.fill_details()
         while True:
             self.display_menu()
             choice = input("Enter your choice: ").strip()
