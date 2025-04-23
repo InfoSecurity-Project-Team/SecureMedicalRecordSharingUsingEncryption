@@ -4,7 +4,6 @@ class CLI:
     def __init__(self):
         parser = argparse.ArgumentParser(prog="ehr", description="Manages electronic health records")
         parser.add_argument("-t", "--type", type=str, help="Identify user type (patient/doctor)")
-        # parser.add_argument("-")
         args = parser.parse_args()
         self.blockchain = None
         self.user_type = args.type.lower()
@@ -68,12 +67,18 @@ class CLI:
     def create_record(self):
         print("\n--- Create New Record ---")
         data = input("Enter medical record details: ")
-        self.blockchain.add_record(self.user_id, data)
+
+        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
+        # self.blockchain.add_record(self.user_id, data)
+
         print("Record successfully added.")
 
     def view_records(self):
         print("\n--- View My Records ---")
-        records = self.blockchain.get_records_by_user(self.user_id)
+
+        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
+        # records = self.blockchain.get_records_by_user(self.user_id)
+
         if not records:
             print("No records found.")
             return
@@ -82,7 +87,10 @@ class CLI:
 
     def update_record(self):
         print("\n--- Update Record ---")
-        records = self.blockchain.get_records_by_user(self.user_id)
+
+        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
+        # records = self.blockchain.get_records_by_user(self.user_id)
+
         if not records:
             print("No records found.")
             return
@@ -90,21 +98,30 @@ class CLI:
         record_num = int(input("Enter record number to update: ")) - 1
         if 0 <= record_num < len(records):
             new_data = input("Enter new medical details: ")
-            self.blockchain.update_record(self.user_id, record_num, new_data)
+
+            # NOTE: This line is to be removed and be replaced with actual function of blockchain file
+            # self.blockchain.update_record(self.user_id, record_num, new_data)
+
             print("Record updated successfully.")
         else:
             print("Invalid record number.")
 
     def delete_record(self):
         print("\n--- Delete Record ---")
-        records = self.blockchain.get_records_by_user(self.user_id)
+
+        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
+        # records = self.blockchain.get_records_by_user(self.user_id)
+
         if not records:
             print("No records found.")
             return
         self.view_records()
-        record_num = int(input("Enter record number to delete: ")) - 1
+        # record_num = int(input("Enter record number to delete: ")) - 1
         if 0 <= record_num < len(records):
-            self.blockchain.delete_record(self.user_id, record_num)
+
+            # NOTE: This line is to be removed and be replaced with actual function of blockchain file
+            # self.blockchain.delete_record(self.user_id, record_num)
+
             print("Record deleted successfully.")
         else:
             print("Invalid record number.")
