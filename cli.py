@@ -7,10 +7,13 @@ from crypto import encrypt_data, decrypt_data
 class CLI:
     def __init__(self):
         parser = argparse.ArgumentParser(prog="ehr", description="Manages electronic health records")
-        parser.add_argument("-t", "--type", type=str, required=True,
+        parser.add_argument("-t", "--type", type=str, required=False,
                             help="Identify user type (patient/doctor)")
         args = parser.parse_args()
-        self.user_type = args.type.lower()
+        if args.type:
+            self.user_type = args.type.lower()
+        else:
+            self.user_type = input("Please enter your user type (patient/doctor): ").strip().lower()
         self.blockchain = Blockchain()
         # Common user details
         self.patient_id = None
