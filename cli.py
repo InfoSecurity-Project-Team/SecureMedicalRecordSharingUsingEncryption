@@ -5,7 +5,7 @@ from auth import authenticate_user, register_user
 from crypto import encrypt_data, decrypt_data
 
 class CLI:
-    def __init__(self):
+    def _init_(self):
         parser = argparse.ArgumentParser(prog="ehr", description="Manages electronic health records")
         parser.add_argument("-t", "--type", type=str, required=True,
                             help="Identify user type (patient/doctor)")
