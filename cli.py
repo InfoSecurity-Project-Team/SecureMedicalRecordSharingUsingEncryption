@@ -1,21 +1,37 @@
 import argparse
+from datetime import datetime
+from blockChain import Blockchain
+from auth import authenticate_user, register_user
+from crypto import encrypt_data, decrypt_data
 
 class CLI:
-    def __init__(self):
+    def _init_(self):
         parser = argparse.ArgumentParser(prog="ehr", description="Manages electronic health records")
-        parser.add_argument("-t", "--type", type=str, help="Identify user type (patient/doctor)")
+        parser.add_argument("-t", "--type", type=str, required=True,
+                            help="Identify user type (patient/doctor)")
         args = parser.parse_args()
-        self.blockchain = None
         self.user_type = args.type.lower()
+        self.blockchain = Blockchain()
+        # Common user details
         self.patient_id = None
         self.patient_name = None
-        self.doctor_id = None
-        self.doctor_name = None
         self.patient_address = None
         self.patient_phone = None
+        # Doctor details
+        self.doctor_id = None
+        self.doctor_name = None
+        # After authentication
+        self.username = None
+        self.authenticated = False
 
     def run(self):
+        # Authenticate user first
+        self.authenticate()
+        if not self.authenticated:
+            print("Authentication failed. Exiting.")
+            return
         self.fill_details()
+
         while True:
             self.display_menu()
             choice = input("Enter your choice: ").strip()
@@ -43,88 +59,106 @@ class CLI:
             else:
                 print("Invalid choice. Please try again.")
 
+    def authenticate(self):
+        # Prompt for username/password and authenticate
+        self.username = input("Username: ")
+        pwd = input("Password: ")
+        if authenticate_user(self.username, pwd):
+            self.authenticated = True
+            print(f"Welcome, {self.username}!")
+        else:
+            self.authenticated = False
+
     def fill_details(self):
         if self.user_type == "patient":
-            self.patient_id = int(input("Enter id: "))
-            self.patient_name = input("Enter name: ")
+            self.patient_id = input("Enter your patient ID: ")
+            self.patient_name = input("Enter your name: ")
         else:
-            self.doctor_id = int(input("Enter id: "))
-            self.doctor_name = input("Enter name: ")
-            self.patient_id = int(input("Enter patient id: "))
+            self.doctor_id = input("Enter your doctor ID: ")
+            self.doctor_name = input("Enter your name: ")
+            self.patient_id = input("Enter patient ID to manage: ")
             self.patient_name = input("Enter patient name: ")
             self.patient_phone = input("Enter patient's phone number: ")
             self.patient_address = input("Enter patient's address: ")
 
     def display_menu(self):
-        print("\n==== Electronic Health Records CLI ====")
-        print("1. Create New Record")
-        print("2. View My Records")
-        print("3. Update Existing Record")
-        print("4. Delete Record")
-        print("5. Logout")
-        print("=======================================")
+        print("\n==== Electronic Health Records CLI ====\n"
+              "1. Create New Record\n"
+              "2. View My Records\n"
+              "3. Update Existing Record\n"
+              "4. Delete Record\n"
+              "5. Logout\n"
+              "=======================================")
 
     def create_record(self):
         print("\n--- Create New Record ---")
-        data = input("Enter medical record details: ")
-
-        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
-        # self.blockchain.add_record(self.user_id, data)
-
-        print("Record successfully added.")
+        record_id = input("Enter record ID: ")
+        details = input("Enter medical record details: ")
+        # Build record payload
+        record = {
+            "record_id": record_id,
+            "patient_id": self.patient_id,
+            "pname": self.patient_name,
+            "address": self.patient_address,
+            "phone": self.patient_phone,
+            "doctor_id": self.doctor_id,
+            "doctor_name": self.doctor_name,
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "data": encrypt_data(details).decode()
+        }
+        self.blockchain.add_block(record)
+        print("Record successfully added to blockchain.")
 
     def view_records(self):
         print("\n--- View My Records ---")
-
-        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
-        # records = self.blockchain.get_records_by_user(self.user_id)
-
+        records = self.blockchain.list_blocks()
+        # Filter by patient_id
+        records = [b for b in records if b['data']['patient_id'] == self.patient_id]
         if not records:
             print("No records found.")
             return
-        for idx, record in enumerate(records, 1):
-            print(f"{idx}. {record}")
+        for idx, blk in enumerate(records, 1):
+            data = blk['data']
+            print(f"Record {idx} | ID: {data['record_id']} | Date: {data['date']}")
 
     def update_record(self):
         print("\n--- Update Record ---")
-
-        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
-        # records = self.blockchain.get_records_by_user(self.user_id)
-
+        records = self.blockchain.list_blocks()
+        records = [b for b in records if b['data']['patient_id'] == self.patient_id]
         if not records:
             print("No records found.")
             return
-        self.view_records()
-        record_num = int(input("Enter record number to update: ")) - 1
-        if 0 <= record_num < len(records):
-            new_data = input("Enter new medical details: ")
-
-            # NOTE: This line is to be removed and be replaced with actual function of blockchain file
-            # self.blockchain.update_record(self.user_id, record_num, new_data)
-
-            print("Record updated successfully.")
-        else:
+        for idx, blk in enumerate(records, 1):
+            print(f"{idx}. ID={blk['data']['record_id']} Date={blk['data']['date']}")
+        choice = int(input("Select record number to update: ")) - 1
+        if not (0 <= choice < len(records)):
             print("Invalid record number.")
+            return
+        record = records[choice]['data']
+        new_details = input("Enter new medical details: ")
+        record['data'] = encrypt_data(new_details).decode()
+        record['date'] = datetime.now().strftime("%Y-%m-%d")
+        record['status'] = 'updated'
+        self.blockchain.add_block(record)
+        print("Record updated successfully.")
 
     def delete_record(self):
         print("\n--- Delete Record ---")
-
-        # NOTE: This line is to be removed and be replaced with actual function of blockchain file
-        # records = self.blockchain.get_records_by_user(self.user_id)
-
+        records = self.blockchain.list_blocks()
+        records = [b for b in records if b['data']['patient_id'] == self.patient_id]
         if not records:
             print("No records found.")
             return
-        self.view_records()
-        # record_num = int(input("Enter record number to delete: ")) - 1
-        if 0 <= record_num < len(records):
-
-            # NOTE: This line is to be removed and be replaced with actual function of blockchain file
-            # self.blockchain.delete_record(self.user_id, record_num)
-
-            print("Record deleted successfully.")
-        else:
+        for idx, blk in enumerate(records, 1):
+            print(f"{idx}. ID={blk['data']['record_id']} Date={blk['data']['date']}")
+        choice = int(input("Select record number to delete: ")) - 1
+        if not (0 <= choice < len(records)):
             print("Invalid record number.")
+            return
+        record = records[choice]['data']
+        record['status'] = 'deleted'
+        self.blockchain.add_block(record)
+        print("Record deleted successfully.")
 
-cli_obj = CLI()
-cli_obj.run()
+if __name__ == '__main__':
+    CLI().run()
