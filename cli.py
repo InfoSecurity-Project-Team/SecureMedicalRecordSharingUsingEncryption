@@ -24,9 +24,6 @@ class CLI:
         # Doctor details
         self.doctor_id = None
         self.doctor_name = None
-        # After authentication
-        self.username = None
-        self.authenticated = False
 
     def run(self):
         print("1- Register\n2- Login\n")
@@ -75,10 +72,13 @@ class CLI:
             try:
                 if not register_user(username, password, role=self.user_type):
                     sys.exit("User could not be registered. Exiting program...")
+
+                # Fill name of current user before running fill_details function
                 if self.user_type == "patient":
                     self.patient_name = username
                 else:
                     self.doctor_name = username
+
                 print("User registered successfully.")
                 return True
             except ValueError as ve:
@@ -88,10 +88,14 @@ class CLI:
 
     def authenticate(self):
         # Prompt for username/password and authenticate
-        self.username = input("Username: ")
+        username = input("Username: ")
         pwd = input("Password: ")
-        if authenticate_user(self.username, pwd, self.user_type):
-            print(f"Welcome, {self.username}!")
+        if authenticate_user(username, pwd, self.user_type):
+            if self.user_type == "patient":
+                self.patient_name = username
+            else:
+                self.doctor_name = username
+            print(f"Welcome, {username}!")
             return True
         return False
 
