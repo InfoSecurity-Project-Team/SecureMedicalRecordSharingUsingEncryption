@@ -75,10 +75,13 @@ class CLI:
             try:
                 if not register_user(username, password, role=self.user_type):
                     sys.exit("User could not be registered. Exiting program...")
+
+                # Fill name of current user before running fill_details function
                 if self.user_type == "patient":
                     self.patient_name = username
                 else:
                     self.doctor_name = username
+
                 print("User registered successfully.")
                 return True
             except ValueError as ve:
