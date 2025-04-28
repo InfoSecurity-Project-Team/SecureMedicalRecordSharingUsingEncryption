@@ -68,6 +68,24 @@ class CLI:
             else:
                 print("Invalid choice. Please try again.")
 
+    def register(self):
+        username = input("Enter username: ").strip()
+        while True:
+            password = input("Enter password: ").strip()
+            try:
+                if not register_user(username, password, role=self.user_type):
+                    sys.exit("User could not be registered. Exiting program...")
+                if self.user_type == "patient":
+                    self.patient_name = username
+                else:
+                    self.doctor_name = username
+                print("User registered successfully.")
+                return True
+            except ValueError as ve:
+                print(ve.args)
+                continue
+        return False
+
     def authenticate(self):
         # Prompt for username/password and authenticate
         self.username = input("Username: ")
