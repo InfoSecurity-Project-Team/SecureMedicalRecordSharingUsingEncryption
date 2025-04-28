@@ -90,11 +90,10 @@ class CLI:
         # Prompt for username/password and authenticate
         self.username = input("Username: ")
         pwd = input("Password: ")
-        if authenticate_user(self.username, pwd):
-            self.authenticated = True
+        if authenticate_user(self.username, pwd, self.user_type):
             print(f"Welcome, {self.username}!")
-        else:
-            self.authenticated = False
+            return True
+        return False
 
     def fill_details(self):
         if self.user_type == "patient":
