@@ -136,16 +136,32 @@ class CLI:
         print("Record successfully added to blockchain.")
 
     def view_records(self):
-        print("\n--- View My Records ---")
+        print("\n--- View Records ---")
         records = self.blockchain.list_blocks()
-        # Filter by patient_id
-        records = [b for b in records if b['data']['patient_id'] == self.patient_id]
+
+        # Ignore genesis block
+        records = [b for b in records if b['index'] != 0]
+
+        # Filter records based on user type
+        if self.user_type == 'patient':
+            records = [b for b in records if b['data'].get('patient_id') == self.patient_id]
+        elif self.user_type == 'doctor':
+            records = [b for b in records if b['data'].get('doctor_id') == self.doctor_id]
+
         if not records:
             print("No records found.")
             return
+
         for idx, blk in enumerate(records, 1):
             data = blk['data']
-            print(f"Record {idx} | ID: {data['record_id']} | Date: {data['date']}")
+            print(f"\n--- Record {idx} ---")
+            print(f"Record ID: {data.get('record_id', 'N/A')}")
+            print(f"Date: {data.get('date', 'N/A')}")
+            print(f"Patient Name: {data.get('pname', 'N/A')}")
+            print(f"Patient Address: {data.get('address', 'N/A')}")
+            print(f"Patient Phone: {data.get('phone', 'N/A')}")
+            print(f"Doctor Name: {data.get('doctor_name', 'N/A')}")
+            print(f"Medical Details: {data.get('data', 'N/A')}")
 
     def update_record(self):
         print("\n--- Update Record ---")
