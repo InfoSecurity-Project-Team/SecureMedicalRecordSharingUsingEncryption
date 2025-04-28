@@ -20,26 +20,34 @@ def validate_password_strength(password: str) -> bool:
         return False
     return True
 
-def register_user(username: str, password: str, role: str):
-    """ Register a new user if the username is not already taken. """
+def register_user(username: str, password: str, role: str) -> bool:
+    """Register a new user if the username is not already taken.
+
+    Raises:
+        ValueError: If the password does not meet strength requirements.
+    
+    Returns:
+        bool: True if registration is successful, False otherwise.
+    """
     if not validate_password_strength(password):
-        return "Password must be at least 8 characters long, with numbers and special characters."
+        raise ValueError("Password must be at least 8 characters long, with numbers and special characters.")
     
     users = {}
     if os.path.exists(USER_FILE):
         with open(USER_FILE, 'r') as f:
             users = json.load(f)
 
-    unique_username = f"{username}_{role}"  # Combine username and role
+    unique_username = f"{username}_{role}".lower()  # Combine username and role
     
     if unique_username in users:
-        return "Username with this role already exists."
+        print("Username with this role already exists.")
+        return False
 
     # Collect secret question/answer if needed
     secret_question = input("Set a secret question for password recovery: ")
     secret_answer = input("Enter the answer to your secret question: ")
 
-    users[username] = {
+    users[unique_username] = {
         'password': hash_password(password),
         'role': role,  # 'patient' or 'doctor'
         'secret_question': secret_question,
@@ -48,9 +56,10 @@ def register_user(username: str, password: str, role: str):
     with open(USER_FILE, 'w') as f:
         json.dump(users, f, indent=4)
 
-    return "User registered successfully."
+    print("User registered successfully.")
+    return True
 
-def authenticate_user(username: str, password: str) -> bool:
+def authenticate_user(username: str, password: str, role: str) -> bool:
     """ Authenticate user based on username and password. """
     if not os.path.exists(USER_FILE):
         return False
@@ -58,19 +67,26 @@ def authenticate_user(username: str, password: str) -> bool:
     with open(USER_FILE, 'r') as f:
         users = json.load(f)
 
+    unique_username = f"{username}_{role}".lower()
     hashed = hash_password(password)
-    return username in users and users[username]['password'] == hashed
+    
+    return unique_username in users and users[unique_username]['password'] == hashed
 
-def generate_otp() -> str:
+def generate_otp() -> tuple[str, float]:
     """ Generate a one-time password (OTP) for MFA. """
     otp = str(random.randint(100000, 999999))  # Generate a 6-digit OTP
-    return otp
+    timestamp = time.time() #Current time in seconds
+    return otp, timestamp
 
-def verify_otp(input_otp: str, otp: str) -> bool:
-    """ Verify the OTP entered by the user. """
+def verify_otp(input_otp: str, otp: str, timestamp: float, expiry_seconds: int = 60) -> bool:
+    """ Verify the OTP entered by the user, considering exriry time """
+    current_time = time.time()
+    if current_time-timestamp>expiry_seconds:
+        print("OTP expired.")
+        return False
     return input_otp == otp
 
-def recover_password(username: str, answer: str) -> bool:
+def recover_password(username: str, answer: str, role: str) -> bool:
     """ Recover password by answering a secret question. """
     if not os.path.exists(USER_FILE):
         return False
@@ -78,8 +94,10 @@ def recover_password(username: str, answer: str) -> bool:
     with open(USER_FILE, 'r') as f:
         users = json.load(f)
 
-    if username in users:
-        correct_answer = users[username]['secret_answer']
+    unique_username=f"{username}_{role}".lower()
+
+    if unique_username in users:
+        correct_answer = users[unique_username]['secret_answer']
         if hash_password(answer) == correct_answer:
             return True
     return False
