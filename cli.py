@@ -24,9 +24,6 @@ class CLI:
         # Doctor details
         self.doctor_id = None
         self.doctor_name = None
-        # After authentication
-        self.username = None
-        self.authenticated = False
 
     def run(self):
         print("1- Register\n2- Login\n")
