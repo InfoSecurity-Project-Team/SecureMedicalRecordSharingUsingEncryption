@@ -98,10 +98,10 @@ class CLI:
     def fill_details(self):
         if self.user_type == "patient":
             self.patient_id = input("Enter your patient ID: ")
-            self.patient_name = input("Enter your name: ")
+            # self.patient_name = input("Enter your name: ")
         else:
             self.doctor_id = input("Enter your doctor ID: ")
-            self.doctor_name = input("Enter your name: ")
+            # self.doctor_name = input("Enter your name: ")
             self.patient_id = input("Enter patient ID to manage: ")
             self.patient_name = input("Enter patient name: ")
             self.patient_phone = input("Enter patient's phone number: ")
