@@ -147,7 +147,7 @@ if __name__ == '__main__':
         "doctor_id": "D456",
         "doctor_name": "Dr. Alice",
         "date": "2025-04-24",
-        "data": "gAAAAABkX..."  # Mock encrypted data
+        "data": "gAAAAABkX"  # Mock encrypted data
     }
 
     # Add a new block with the encrypted data

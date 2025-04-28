@@ -20,8 +20,7 @@
             "phone": "+123456789",
             "doctor_id": "D456",
             "doctor_name": "Dr. Alice",
-            "date": "2025-04-24",
-            "data": "gAAAAABkX..."  
+            "date": "2025-04-24"
         },
         "prev_hash": "f7b5d91c1dd3d45057b4a7d57b84f61c042f9ff4dc0f1ff5ff6d0eb46c63f91c",
         "hash": "79f6b7393b67ac713b394eb197282a98317cfa2d7f8ef1537fd13976cbd038ec"
