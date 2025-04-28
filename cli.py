@@ -91,10 +91,14 @@ class CLI:
 
     def authenticate(self):
         # Prompt for username/password and authenticate
-        self.username = input("Username: ")
+        username = input("Username: ")
         pwd = input("Password: ")
-        if authenticate_user(self.username, pwd, self.user_type):
-            print(f"Welcome, {self.username}!")
+        if authenticate_user(username, pwd, self.user_type):
+            if self.user_type == "patient":
+                self.patient_name = username
+            else:
+                self.doctor_name = username
+            print(f"Welcome, {username}!")
             return True
         return False
 
