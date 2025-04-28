@@ -130,7 +130,7 @@ class CLI:
             "doctor_id": self.doctor_id,
             "doctor_name": self.doctor_name,
             "date": datetime.now().strftime("%Y-%m-%d"),
-            "data": encrypt_data(details).decode()
+            "data": details
         }
         self.blockchain.add_block(record)
         print("Record successfully added to blockchain.")

@@ -3,6 +3,7 @@ import hashlib
 import os
 from time import time
 from typing import List, Dict, Any
+from crypto import encrypt_data
 
 # Path to store the blockchain data
 CHAIN_FILE = 'chain.json'
@@ -82,16 +83,22 @@ class Blockchain:
         self.chain.append(genesis_block)
         self.save_chain()
 
-    def add_block(self, encrypted_data: Dict[str, Any]):
+    def add_block(self, record_data: Dict[str, Any]):
         """
-        Add a new block with encrypted medical record data to the chain.
-        :param encrypted_data: Dictionary containing encrypted patient and doctor data.
+        Add a new block with medical record data to the chain.
+        Encrypt sensitive fields before saving.
+        :param record_data: Dictionary containing plain patient and doctor data.
         """
+        # Encrypt 'data' and 'address' fields
+        record_data['data'] = encrypt_data(record_data['data']).decode()
+        if 'address' in record_data and record_data['address']:
+            record_data['address'] = encrypt_data(record_data['address']).decode()
+
         last_block = self.chain[-1]
         new_block = Block(
             index=last_block.index + 1,
             timestamp=time(),
-            data=encrypted_data,
+            data=record_data,
             prev_hash=last_block.hash
         )
         self.chain.append(new_block)
