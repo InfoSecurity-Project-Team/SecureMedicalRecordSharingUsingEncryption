@@ -1,4 +1,5 @@
 import argparse
+import sys
 from datetime import datetime
 from blockChain import Blockchain
 from auth import authenticate_user, register_user
@@ -28,11 +29,16 @@ class CLI:
         self.authenticated = False
 
     def run(self):
-        # Authenticate user first
-        self.authenticate()
-        if not self.authenticated:
-            print("Authentication failed. Exiting.")
-            return
+        print("1- Register\n2- Login\n")
+        choice = int(input("Enter choice: ").strip())
+        if choice == 1:
+            if not self.register():
+                sys.exit("User could not be registered. Exiting program...")
+        else:
+            if not self.authenticate():
+                print("Authentication failed. Exiting.")
+                return
+
         self.fill_details()
 
         while True:
