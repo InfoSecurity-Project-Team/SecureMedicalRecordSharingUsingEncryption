@@ -56,7 +56,6 @@ def register_user(username: str, password: str, role: str) -> bool:
     with open(USER_FILE, 'w') as f:
         json.dump(users, f, indent=4)
 
-    print("User registered successfully.")
     return True
 
 def authenticate_user(username: str, password: str, role: str) -> bool:
