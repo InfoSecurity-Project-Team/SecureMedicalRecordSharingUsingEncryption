@@ -4,5 +4,11 @@
         "role": "doctor",
         "secret_question": "pet",
         "secret_answer": "c730a8070ca69ae746002271a82c9e212955976587d16b4ac5f6ccdef9f4970b"
+    },
+    "talha_doctor": {
+        "password": "bd1906f9df265e1a8bc60c055a12e113b047bd68a612ea06a57915a667f3f825",
+        "role": "doctor",
+        "secret_question": "pet",
+        "secret_answer": "c730a8070ca69ae746002271a82c9e212955976587d16b4ac5f6ccdef9f4970b"
     }
 }
