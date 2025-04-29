@@ -4,5 +4,23 @@
         "role": "doctor",
         "secret_question": "pet",
         "secret_answer": "c730a8070ca69ae746002271a82c9e212955976587d16b4ac5f6ccdef9f4970b"
+    },
+    "haris": {
+        "password": "c4c809a80e4bfa8d51dbe5988d7665716849e1f5e4397c3208ff5cf68cbb80f6",
+        "role": "doctor",
+        "secret_question": "What did I eat for breakfast today?",
+        "secret_answer": "f1c1f57728f932efde20e53703ee5f96b1cebdc15b8578b7faa727c89dbfe03f"
+    },
+    "testuser_doctor": {
+        "password": "d15acc831393e20987eb5f39e9c871596ad7b42f48c9c166da800aba6e7a4c07",
+        "role": "doctor",
+        "secret_question": "What is my name?",
+        "secret_answer": "fcd6fea72de7e6c09ca2567674befdef61c04e783bd2e0f092aeb99c57e587e3"
+    },
+    "testuser1_doctor": {
+        "password": "be7823424ef1bb47922fc75675b7762a8368a995bf45dc3cb2698e226ad51f0e",
+        "role": "doctor",
+        "secret_question": "TEST_QUESTION",
+        "secret_answer": "372bed245cea2c95a18dbc3b5138f7c4a0d25081f17cf2afb946a98758e3f493"
     }
 }
