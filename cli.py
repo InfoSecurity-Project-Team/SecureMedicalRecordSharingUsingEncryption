@@ -49,16 +49,6 @@ class CLI:
             elif choice == "2":
                 self.view_records()
             elif choice == "3":
-                if self.user_type == "patient":
-                    print("Error: Insufficient permission")
-                    continue
-                self.update_record()
-            elif choice == "4":
-                if self.user_type == "patient":
-                    print("Error: Insufficient permission")
-                    continue
-                self.delete_record()
-            elif choice == "5":
                 print("Logging out...")
                 break
             else:
@@ -114,9 +104,6 @@ class CLI:
         print("\n==== Electronic Health Records CLI ====\n"
               "1. Create New Record\n"
               "2. View My Records\n"
-              "3. Update Existing Record\n"
-              "4. Delete Record\n"
-              "5. Logout\n"
               "=======================================")
 
     def create_record(self):
@@ -166,44 +153,44 @@ class CLI:
             print(f"Doctor Name: {data.get('doctor_name', 'N/A')}")
             print(f"Medical Details: {data.get('data', 'N/A')}")
 
-    def update_record(self):
-        print("\n--- Update Record ---")
-        records = self.blockchain.list_blocks()
-        records = [b for b in records if b['data']['patient_id'] == self.patient_id]
-        if not records:
-            print("No records found.")
-            return
-        for idx, blk in enumerate(records, 1):
-            print(f"{idx}. ID={blk['data']['record_id']} Date={blk['data']['date']}")
-        choice = int(input("Select record number to update: ")) - 1
-        if not (0 <= choice < len(records)):
-            print("Invalid record number.")
-            return
-        record = records[choice]['data']
-        new_details = input("Enter new medical details: ")
-        record['data'] = encrypt_data(new_details).decode()
-        record['date'] = datetime.now().strftime("%Y-%m-%d")
-        record['status'] = 'updated'
-        self.blockchain.add_block(record)
-        print("Record updated successfully.")
-
-    def delete_record(self):
-        print("\n--- Delete Record ---")
-        records = self.blockchain.list_blocks()
-        records = [b for b in records if b['data']['patient_id'] == self.patient_id]
-        if not records:
-            print("No records found.")
-            return
-        for idx, blk in enumerate(records, 1):
-            print(f"{idx}. ID={blk['data']['record_id']} Date={blk['data']['date']}")
-        choice = int(input("Select record number to delete: ")) - 1
-        if not (0 <= choice < len(records)):
-            print("Invalid record number.")
-            return
-        record = records[choice]['data']
-        record['status'] = 'deleted'
-        self.blockchain.add_block(record)
-        print("Record deleted successfully.")
+    # def update_record(self):
+    #     print("\n--- Update Record ---")
+    #     records = self.blockchain.list_blocks()
+    #     records = [b for b in records if b['data']['patient_id'] == self.patient_id]
+    #     if not records:
+    #         print("No records found.")
+    #         return
+    #     for idx, blk in enumerate(records, 1):
+    #         print(f"{idx}. ID={blk['data']['record_id']} Date={blk['data']['date']}")
+    #     choice = int(input("Select record number to update: ")) - 1
+    #     if not (0 <= choice < len(records)):
+    #         print("Invalid record number.")
+    #         return
+    #     record = records[choice]['data']
+    #     new_details = input("Enter new medical details: ")
+    #     record['data'] = encrypt_data(new_details).decode()
+    #     record['date'] = datetime.now().strftime("%Y-%m-%d")
+    #     record['status'] = 'updated'
+    #     self.blockchain.add_block(record)
+    #     print("Record updated successfully.")
+    #
+    # def delete_record(self):
+    #     print("\n--- Delete Record ---")
+    #     records = self.blockchain.list_blocks()
+    #     records = [b for b in records if b['data']['patient_id'] == self.patient_id]
+    #     if not records:
+    #         print("No records found.")
+    #         return
+    #     for idx, blk in enumerate(records, 1):
+    #         print(f"{idx}. ID={blk['data']['record_id']} Date={blk['data']['date']}")
+    #     choice = int(input("Select record number to delete: ")) - 1
+    #     if not (0 <= choice < len(records)):
+    #         print("Invalid record number.")
+    #         return
+    #     record = records[choice]['data']
+    #     record['status'] = 'deleted'
+    #     self.blockchain.add_block(record)
+    #     print("Record deleted successfully.")
 
 if __name__ == '__main__':
     CLI().run()
