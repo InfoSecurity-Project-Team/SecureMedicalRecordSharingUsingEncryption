@@ -105,7 +105,7 @@ class CLI:
 
     def create_record(self):
         print("\n--- Create New Record ---")
-        record_id = input("Enter record ID: ")
+        # record_id = input("Enter record ID: ")
         self.patient_id = input("Enter patient ID to manage: ")
         self.patient_name = input("Enter patient name: ")
         self.patient_phone = input("Enter patient's phone number: ")
