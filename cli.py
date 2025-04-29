@@ -3,7 +3,6 @@ import sys
 from datetime import datetime
 from blockChain import Blockchain
 from auth import authenticate_user, register_user
-from crypto import encrypt_data, decrypt_data
 
 class CLI:
     def __init__(self):
