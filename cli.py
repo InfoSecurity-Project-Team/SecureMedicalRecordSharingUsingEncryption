@@ -112,7 +112,7 @@ class CLI:
         details = input("Enter medical record details: ")
         # Build record payload
         record = {
-            "record_id": record_id,
+            # "record_id": record_id,
             "patient_id": self.patient_id,
             "pname": self.patient_name,
             "address": self.patient_address,
@@ -145,7 +145,7 @@ class CLI:
         for idx, blk in enumerate(records, 1):
             data = blk['data']
             print(f"\n--- Record {idx} ---")
-            print(f"Record ID: {data.get('record_id', 'N/A')}")
+            # print(f"Record ID: {data.get('record_id', 'N/A')}")
             print(f"Date: {data.get('date', 'N/A')}")
             print(f"Patient Name: {data.get('pname', 'N/A')}")
             print(f"Patient Address: {data.get('address', 'N/A')}")
