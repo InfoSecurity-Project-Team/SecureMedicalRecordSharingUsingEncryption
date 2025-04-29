@@ -22,5 +22,13 @@
         "role": "doctor",
         "secret_question": "TEST_QUESTION",
         "secret_answer": "372bed245cea2c95a18dbc3b5138f7c4a0d25081f17cf2afb946a98758e3f493"
+    },
+    "talha_doctor": {
+        "password": "bd1906f9df265e1a8bc60c055a12e113b047bd68a612ea06a57915a667f3f825",
+        "role": "doctor"
+    },
+    "umer_patient": {
+        "password": "f03600713658d6185f7231106640f2cbdd21af6e67c9ead9b3dc90f6995a90b8",
+        "role": "patient"
     }
 }
