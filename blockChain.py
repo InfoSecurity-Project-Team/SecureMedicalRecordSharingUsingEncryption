@@ -3,7 +3,7 @@ import hashlib
 import os
 from time import time
 from typing import List, Dict, Any
-from crypto import encrypt_data
+from crypto import encrypt_data , decrypt_data
 
 # Path to store the blockchain data
 CHAIN_FILE = 'chain.json'
@@ -116,10 +116,38 @@ class Blockchain:
 
     def list_blocks(self) -> List[Dict[str, Any]]:
         """
-        Get all blocks in the blockchain.
+        Get all blocks in the blockchain with decrypted medical data (except Genesis block).
+
         :return: List of dictionaries representing the blockchain.
         """
-        return [block.to_dict() for block in self.chain]
+        blocks = []
+        for block in self.chain:
+            block_dict = block.to_dict()
+            data = block_dict.get('data', {})
+
+            # Skip decryption for Genesis block
+            if block_dict['index'] == 0:
+                blocks.append(block_dict)
+                continue
+
+            # Decrypt sensitive fields safely
+            if 'data' in data and isinstance(data['data'], str):
+                try:
+                    decrypted_details = decrypt_data(data['data'])
+                    data['data'] = decrypted_details
+                except Exception:
+                    data['data'] = "[Decryption Failed]"
+
+            if 'address' in data and isinstance(data['address'], str):
+                try:
+                    decrypted_address = decrypt_data(data['address'])
+                    data['address'] = decrypted_address
+                except Exception:
+                    data['address'] = "[Decryption Failed]"
+
+            blocks.append(block_dict)
+
+        return blocks
 
     def save_chain(self):
         """
