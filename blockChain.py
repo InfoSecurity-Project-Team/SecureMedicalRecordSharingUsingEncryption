@@ -2,6 +2,7 @@ import json
 import hashlib
 import os
 from time import time
+from copy import deepcopy
 from typing import List, Dict, Any
 from crypto import encrypt_data , decrypt_data
 
@@ -89,10 +90,11 @@ class Blockchain:
         Encrypt sensitive fields before saving.
         :param record_data: Dictionary containing plain patient and doctor data.
         """
-        # Encrypt 'data' and 'address' fields
-        record_data['data'] = encrypt_data(record_data['data']).decode()
-        if 'address' in record_data and record_data['address']:
-            record_data['address'] = encrypt_data(record_data['address']).decode()
+        # Encrypt sensitive fields if they exist
+        sensitive_fields = ['data', 'address', 'pname', 'phone', 'doctor_name']
+        for field in sensitive_fields:
+            if field in record_data and record_data[field]:
+                record_data[field] = encrypt_data(record_data[field]).decode()
 
         last_block = self.chain[-1]
         new_block = Block(
@@ -116,38 +118,32 @@ class Blockchain:
 
     def list_blocks(self) -> List[Dict[str, Any]]:
         """
-        Get all blocks in the blockchain with decrypted medical data (except Genesis block).
-
+        Get all blocks in the blockchain with decrypted fields (except Genesis block).
         :return: List of dictionaries representing the blockchain.
         """
-        blocks = []
-        for block in self.chain:
-            block_dict = block.to_dict()
-            data = block_dict.get('data', {})
+        decrypted_blocks = []
 
-            # Skip decryption for Genesis block
+        for block in self.chain:
+            block_dict = deepcopy(block.to_dict())  # Make a deep copy so there must be no decryption error while running this function multiple time
+            data = block_dict.get("data", {})
+
+            # Skip Genesis block
             if block_dict['index'] == 0:
-                blocks.append(block_dict)
+                decrypted_blocks.append(block_dict)
                 continue
 
-            # Decrypt sensitive fields safely
-            if 'data' in data and isinstance(data['data'], str):
-                try:
-                    decrypted_details = decrypt_data(data['data'])
-                    data['data'] = decrypted_details
-                except Exception:
-                    data['data'] = "[Decryption Failed]"
+            # Fields that were encrypted
+            encrypted_fields = ['data', 'address', 'pname', 'phone', 'doctor_name']
+            for field in encrypted_fields:
+                if field in data and isinstance(data[field], str):
+                    try:
+                        data[field] = decrypt_data(data[field])
+                    except Exception:
+                        data[field] = "[Decryption Failed]"
 
-            if 'address' in data and isinstance(data['address'], str):
-                try:
-                    decrypted_address = decrypt_data(data['address'])
-                    data['address'] = decrypted_address
-                except Exception:
-                    data['address'] = "[Decryption Failed]"
+            decrypted_blocks.append(block_dict)
 
-            blocks.append(block_dict)
-
-        return blocks
+        return decrypted_blocks
 
     def save_chain(self):
         """
@@ -169,28 +165,28 @@ class Blockchain:
 
 
 # Example usage
-if __name__ == '__main__':
-    blockchain = Blockchain()
-
-    # This data should be encrypted in actual implementation
-    new_record = {
-        "record_id": "001",
-        "patient_id": "P123",
-        "pname": "John Doe",
-        "address": "123 Elm Street",
-        "phone": "+123456789",
-        "doctor_id": "D456",
-        "doctor_name": "Dr. Alice",
-        "date": "2025-04-24",
-        "data": "gAAAAABkX"  # Mock encrypted data
-    }
-
-    # Add a new block with the encrypted data
-    blockchain.add_block(new_record)
-
-    # Print all blocks
-    for blk in blockchain.list_blocks():
-        print(blk)
-
-    # Print a specific block by index
-    print(blockchain.get_block(1))
+# if __name__ == '__main__':
+#     blockchain = Blockchain()
+#
+#     # This data should be encrypted in actual implementation
+#     new_record = {
+#         "record_id": "001",
+#         "patient_id": "P123",
+#         "pname": "John Doe",
+#         "address": "123 Elm Street",
+#         "phone": "+123456789",
+#         "doctor_id": "D456",
+#         "doctor_name": "Dr. Alice",
+#         "date": "2025-04-24",
+#         "data": "gAAAAABkX"  # Mock encrypted data
+#     }
+#
+#     # Add a new block with the encrypted data
+#     blockchain.add_block(new_record)
+#
+#     # Print all blocks
+#     for blk in blockchain.list_blocks():
+#         print(blk)
+#
+#     # Print a specific block by index
+#     print(blockchain.get_block(1))
