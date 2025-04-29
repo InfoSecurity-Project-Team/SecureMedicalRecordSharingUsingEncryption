@@ -43,15 +43,9 @@ def register_user(username: str, password: str, role: str) -> bool:
         print("Username with this role already exists.")
         return False
 
-    # Collect secret question/answer if needed
-    secret_question = input("Set a secret question for password recovery: ")
-    secret_answer = input("Enter the answer to your secret question: ")
-
     users[unique_username] = {
         'password': hash_password(password),
         'role': role,  # 'patient' or 'doctor'
-        'secret_question': secret_question,
-        'secret_answer': hash_password(secret_answer)
     }
     with open(USER_FILE, 'w') as f:
         json.dump(users, f, indent=4)
@@ -84,19 +78,3 @@ def verify_otp(input_otp: str, otp: str, timestamp: float, expiry_seconds: int =
         print("OTP expired.")
         return False
     return input_otp == otp
-
-def recover_password(username: str, answer: str, role: str) -> bool:
-    """ Recover password by answering a secret question. """
-    if not os.path.exists(USER_FILE):
-        return False
-
-    with open(USER_FILE, 'r') as f:
-        users = json.load(f)
-
-    unique_username=f"{username}_{role}".lower()
-
-    if unique_username in users:
-        correct_answer = users[unique_username]['secret_answer']
-        if hash_password(answer) == correct_answer:
-            return True
-    return False
