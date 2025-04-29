@@ -95,20 +95,21 @@ class CLI:
         else:
             self.doctor_id = input("Enter your doctor ID: ")
             # self.doctor_name = input("Enter your name: ")
-            self.patient_id = input("Enter patient ID to manage: ")
-            self.patient_name = input("Enter patient name: ")
-            self.patient_phone = input("Enter patient's phone number: ")
-            self.patient_address = input("Enter patient's address: ")
 
     def display_menu(self):
         print("\n==== Electronic Health Records CLI ====\n"
               "1. Create New Record\n"
               "2. View My Records\n"
+              "3. Logout\n"
               "=======================================")
 
     def create_record(self):
         print("\n--- Create New Record ---")
         record_id = input("Enter record ID: ")
+        self.patient_id = input("Enter patient ID to manage: ")
+        self.patient_name = input("Enter patient name: ")
+        self.patient_phone = input("Enter patient's phone number: ")
+        self.patient_address = input("Enter patient's address: ")
         details = input("Enter medical record details: ")
         # Build record payload
         record = {
