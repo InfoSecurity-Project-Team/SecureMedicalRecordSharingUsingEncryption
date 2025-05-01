@@ -30,5 +30,17 @@
     "umer_patient": {
         "password": "f03600713658d6185f7231106640f2cbdd21af6e67c9ead9b3dc90f6995a90b8",
         "role": "patient"
+    },
+    "test_user_9_doctor": {
+        "password": "d15acc831393e20987eb5f39e9c871596ad7b42f48c9c166da800aba6e7a4c07",
+        "role": "doctor"
+    },
+    "test_patient_9_patient": {
+        "password": "d15acc831393e20987eb5f39e9c871596ad7b42f48c9c166da800aba6e7a4c07",
+        "role": "patient"
+    },
+    "test_doctor_doctor": {
+        "password": "06211e7e9bfd64bd78e4d272e54d2f7ae3afcfc69ba57430b0116e280068c7cf",
+        "role": "doctor"
     }
 }
