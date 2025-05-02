@@ -42,5 +42,13 @@
     "test_doctor_doctor": {
         "password": "06211e7e9bfd64bd78e4d272e54d2f7ae3afcfc69ba57430b0116e280068c7cf",
         "role": "doctor"
+    },
+    "ash_doctor": {
+        "password": "860c162183385e024060eaea37224df4fab0ab42813abf61cf5251aa69d63924",
+        "role": "doctor"
+    },
+    "talha_patient": {
+        "password": "6d6aed2d0f39dd12fb9e41af2be49b55d75c6eb4b1edfff3b82744109d525c0a",
+        "role": "patient"
     }
 }
