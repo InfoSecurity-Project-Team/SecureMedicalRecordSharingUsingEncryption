@@ -58,12 +58,21 @@ def create_login_frame():
     Title_1 = Label(pat_frame, text="Login", fg='#2685f6', bg='white', font=('Helvetica', 23, 'bold'))
     Title_1.place(x=200, y=30)
 
-    user_type_var = StringVar()
+
+    user_type_var = StringVar(value="Select User Type")
+
+    # Create the combobox in readonly mode
     user_type_dropdown = ttk.Combobox(pat_frame, textvariable=user_type_var, state="readonly",
-                                   values=["Doctor", "Patient"], font=('Arial', 12), width=36)
-    user_type_dropdown.set("Select User Type")
+                                    values=["Doctor", "Patient"], font=('Arial', 12), width=36)
+
     user_type_dropdown.place(x=50, y=120)
 
+    # Update the combobox manually when a selection is made
+    def on_select(event):
+        if user_type_var.get() == "Select User Type":
+            user_type_var.set("")  # Clear placeholder when dropdown is used
+
+    user_type_dropdown.bind('<<ComboboxSelected>>', on_select)
 
 
     username = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
