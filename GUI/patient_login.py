@@ -4,7 +4,6 @@ from PIL import Image, ImageTk
 from tkinter import ttk
 from register_window import open_register_window
 
-
 def open_dashboard():
     dashboard = Tk()
     dashboard.title("Dashboard")
@@ -18,16 +17,8 @@ root.geometry('1225x700')
 root.configure(bg='white')
 root.resizable(False, False)
 
-def load_images():
-    hospital_img = Image.open('Assets/hospital.jpg').resize((550, 550))
-    hospital_img_tk = ImageTk.PhotoImage(hospital_img)
-
-    doctor_img = Image.open('Assets/doc.jpg').resize((550, 550))
-    doctor_img_tk = ImageTk.PhotoImage(doctor_img)
-
-    return hospital_img_tk, doctor_img_tk
-
-hospital_img_tk, doctor_img_tk = load_images()
+hospital_img = Image.open('Assets/hospital.jpg').resize((550, 550))
+hospital_img_tk = ImageTk.PhotoImage(hospital_img)
 
 image_label = Label(root, image=hospital_img_tk, bg='white')
 image_label.place(x=50, y=50)
@@ -58,22 +49,16 @@ def create_login_frame():
     Title_1 = Label(pat_frame, text="Login", fg='#2685f6', bg='white', font=('Helvetica', 23, 'bold'))
     Title_1.place(x=200, y=30)
 
-
     user_type_var = StringVar(value="Select User Type")
-
-    # Create the combobox in readonly mode
     user_type_dropdown = ttk.Combobox(pat_frame, textvariable=user_type_var, state="readonly",
                                     values=["Doctor", "Patient"], font=('Arial', 12), width=36)
-
     user_type_dropdown.place(x=50, y=120)
 
-    # Update the combobox manually when a selection is made
     def on_select(event):
         if user_type_var.get() == "Select User Type":
-            user_type_var.set("")  # Clear placeholder when dropdown is used
+            user_type_var.set("") 
 
     user_type_dropdown.bind('<<ComboboxSelected>>', on_select)
-
 
     username = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
     username.place(x=50, y=180)
@@ -101,7 +86,6 @@ def create_login_frame():
 
     Button(pat_frame, width=7, height=2, border=0, bg='white', fg='#2685f6',
            cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=lambda: [root.destroy(), open_register_window()]).place(x=210, y=401)
-
 
 create_login_frame()
 root.mainloop()
