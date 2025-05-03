@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import ttk
+from register_window import open_register_window
+
 
 def open_dashboard():
     dashboard = Tk()
@@ -59,8 +61,9 @@ def create_login_frame():
     user_type_var = StringVar()
     user_type_dropdown = ttk.Combobox(pat_frame, textvariable=user_type_var, state="readonly",
                                    values=["Doctor", "Patient"], font=('Arial', 12), width=36)
-    user_type_dropdown.place(x=50, y=120)
     user_type_dropdown.set("Select User Type")
+    user_type_dropdown.place(x=50, y=120)
+
 
 
     username = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
@@ -88,12 +91,7 @@ def create_login_frame():
     Label(pat_frame, text="Don't have an account? ", fg='black', bg='white', font=('Arial', 10, 'bold')).place(x=50, y=410)
 
     Button(pat_frame, width=7, height=2, border=0, bg='white', fg='#2685f6',
-           cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=open_register_window).place(x=210, y=401)
-
-def open_register_window():
-    register_window = Toplevel(root)
-    register_window.title("Registration")
-    register_window.geometry('400x400')
+           cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=lambda: [root.destroy(), open_register_window()]).place(x=210, y=401)
 
 
 create_login_frame()
