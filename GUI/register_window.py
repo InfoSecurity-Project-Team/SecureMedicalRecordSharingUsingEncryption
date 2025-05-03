@@ -7,7 +7,7 @@ def open_register_window():
     register_window.geometry("400x500")
     register_window.configure(bg='white')
 
-    Label(register_window, text="Registration Window", font=('Arial', 16), bg='white').pack(pady=20)
+    Label(register_window, text="Registration Window", font=('Arial', 16,'bold'), fg='#2685f6',bg='white').pack(pady=20)
 
     Label(register_window, text="User Type:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
     user_type_var = StringVar()
