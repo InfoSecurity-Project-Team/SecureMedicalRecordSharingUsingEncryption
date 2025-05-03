@@ -60,21 +60,21 @@ def create_login_frame():
 
     user_type_dropdown.bind('<<ComboboxSelected>>', on_select)
 
-    # Username Label and Text Box in the same line
+    
     username_label = Label(pat_frame, text="Username:", fg='#2685f6', bg='white', font=('Arial', 12,'bold'))
     username_label.place(x=10, y=180)
 
     username = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
-    username.place(x=100, y=180)  # Positioned to the right of the label
+    username.place(x=100, y=180) 
     add_placeholder(username, "Enter username")
     Frame(pat_frame, width=350, height=2, bg='black').place(x=100, y=200)
 
-    # Password Label and Text Box in the same line
+   
     password_label = Label(pat_frame, text="Password:", fg='#2685f6', bg='white', font=('Arial', 12,'bold'))
     password_label.place(x=10, y=250)
 
     password = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
-    password.place(x=100, y=250)  # Positioned to the right of the label
+    password.place(x=100, y=250)  
     add_placeholder(password, "Enter password")
     Frame(pat_frame, width=350, height=2, bg='black').place(x=100, y=270)
 
