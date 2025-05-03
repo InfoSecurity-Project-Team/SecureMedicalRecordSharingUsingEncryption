@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
+from tkinter import ttk
 
 def open_dashboard():
     dashboard = Tk()
@@ -52,13 +53,15 @@ def create_login_frame():
     pat_frame = Frame(root, width=580, height=850, background='white')
     pat_frame.place(x=650, y=70)
 
-    Title_1 = Label(pat_frame, text="Patient Login", fg='#2685f6', bg='white', font=('Helvetica', 23, 'bold'))
-    Title_1.place(x=140, y=30)
+    Title_1 = Label(pat_frame, text="Login", fg='#2685f6', bg='white', font=('Helvetica', 23, 'bold'))
+    Title_1.place(x=200, y=30)
 
-    user_type = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
-    user_type.place(x=50, y=120)
-    add_placeholder(user_type, "Doctor/Patient")
-    Frame(pat_frame, width=350, height=2, bg='black').place(x=50, y=140)
+    user_type_var = StringVar()
+    user_type_dropdown = ttk.Combobox(pat_frame, textvariable=user_type_var, state="readonly",
+                                   values=["Doctor", "Patient"], font=('Arial', 12), width=36)
+    user_type_dropdown.place(x=50, y=120)
+    user_type_dropdown.set("Select User Type")
+
 
     username = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
     username.place(x=50, y=180)
