@@ -30,7 +30,7 @@ def register_user(username, password, phone, user_type):
             return "exists"
 
         # Insert new user
-        insert_query = f"INSERT INTO {table} (name, password, phone) VALUES (%s, %s, %s)"
+        insert_query = f"INSERT INTO {table} (name, password, phone_number) VALUES (%s, %s, %s)"
         cursor.execute(insert_query, (username, password, phone))
         conn.commit()
 
