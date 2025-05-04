@@ -3,6 +3,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import ttk
 from register_window import open_register_window
+from database.db_functions import authenticate_user
 
 def open_dashboard():
     dashboard = Tk()
@@ -81,7 +82,8 @@ def create_login_frame():
     def login():
         entered_user = username.get("1.0", "end-1c").strip()
         entered_pass = password.get("1.0", "end-1c").strip()
-        if entered_user == 'ashir' and entered_pass == '1234':
+        user = authenticate_user(entered_user, entered_pass, user_type_var.get())
+        if user:
             root.destroy()
             open_dashboard()
         else:
