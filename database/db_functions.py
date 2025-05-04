@@ -1,4 +1,4 @@
-from db_connection import get_connection
+from .db_connection import get_connection
 
 def authenticate_user(username, password, user_type):
     table = "doctors" if user_type.lower() == "doctor" else "patients"
