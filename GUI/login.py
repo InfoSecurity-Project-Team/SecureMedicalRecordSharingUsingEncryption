@@ -83,9 +83,12 @@ def create_login_frame():
         entered_user = username.get("1.0", "end-1c").strip()
         entered_pass = password.get("1.0", "end-1c").strip()
         user = authenticate_user(entered_user, entered_pass, user_type_var.get())
-        if user:
+        if user_type_dropdown=='':
+            messagebox.showerror("Error","user type not selected")
+        elif user:
             root.destroy()
             open_dashboard()
+            
         else:
             messagebox.showerror("Error", "Incorrect credentials written please try again")
 
