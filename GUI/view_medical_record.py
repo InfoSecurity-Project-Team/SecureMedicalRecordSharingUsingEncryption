@@ -1,11 +1,19 @@
 from tkinter import *
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox  
+from db_connection import get_connection  
 
 BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
 def view_medical_records_gui(user_type):
+    try:
+        db = get_connection()  
+        cursor = db.cursor()
+    except Exception as e:
+        messagebox.showerror("Database Error", f"Failed to connect to database:\n{e}")
+        return
+
     root = Tk()
     root.title("View Medical Records")
     root.geometry("1100x600")
@@ -26,19 +34,20 @@ def view_medical_records_gui(user_type):
         if not patient_name:
             messagebox.showwarning("Input Error", "Please enter a patient name to search.")
             return
-        # 🔍 Dummy example - clear then insert mock data
+
+        query = "SELECT * FROM records WHERE name LIKE %s"
+        cursor.execute(query, (f"%{patient_name}%",))
+        results = cursor.fetchall()
         tree.delete(*tree.get_children())
-        tree.insert("", "end", values=("001", patient_name, "25", "Male", "Fever", "Flu", "2025-04-01", "Dr. Khan", "Rest & fluids"))
+        for row in results:
+            tree.insert("", "end", values=row)
 
     def view_all_records():
-        # 📋 Dummy example - insert some mock data
+        cursor.execute("SELECT * FROM records")
+        results = cursor.fetchall()
         tree.delete(*tree.get_children())
-        sample_data = [
-            ("001", "Ali", "25", "Male", "Fever", "Flu", "2025-04-01", "Dr. Khan", "Rest & fluids"),
-            ("002", "Sara", "30", "Female", "Cough", "Cold", "2025-04-02", "Dr. Ali", "Cough syrup")
-        ]
-        for record in sample_data:
-            tree.insert("", "end", values=record)
+        for row in results:
+            tree.insert("", "end", values=row)
 
     Button(search_frame, text="Search", font=FONT, bg=BLUE, fg=WHITE, command=search_records).pack(side=LEFT, padx=10)
 
@@ -54,7 +63,11 @@ def view_medical_records_gui(user_type):
 
     root.mainloop()
 
-# --- Call the GUI function based on user role ---
-# Example:
-view_medical_records_gui("patient")
-view_medical_records_gui("doctor")
+    cursor.close()
+    db.close()
+
+if __name__ == "__main__":
+    view_medical_records_gui("doctor") 
+
+if __name__ == "__main__":
+    view_medical_records_gui("patient")  
