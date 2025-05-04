@@ -26,9 +26,7 @@ def open_register_window():
     password_entry = Entry(register_window, font=('Arial', 12), width=32)
     password_entry.pack(pady=5)
 
-    Label(register_window, text="Address:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
-    address_entry = Entry(register_window, font=('Arial', 12), width=32)
-    address_entry.pack(pady=5)
+
 
     Label(register_window, text="Phone Number:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
     phone_entry = Entry(register_window, font=('Arial', 12), width=32)
