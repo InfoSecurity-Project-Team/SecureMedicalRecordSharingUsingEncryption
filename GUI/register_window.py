@@ -26,9 +26,7 @@ def open_register_window():
     password_entry = Entry(register_window, font=('Arial', 12), width=32)
     password_entry.pack(pady=5)
 
-    Label(register_window, text="Address:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
-    address_entry = Entry(register_window, font=('Arial', 12), width=32)
-    address_entry.pack(pady=5)
+
 
     Label(register_window, text="Phone Number:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
     phone_entry = Entry(register_window, font=('Arial', 12), width=32)
@@ -38,17 +36,15 @@ def open_register_window():
 
         username = username_entry.get()
         password = password_entry.get()
-        address = address_entry.get()
         phone = phone_entry.get()
         user_type = user_type_var.get()
 
-        if username == "" or password == "" or address == "" or phone == "" or user_type == "Select User Type":
+        if username == "" or password == ""  or phone == "" or user_type == "Select User Type":
             messagebox.showerror("Error", "All fields are required!")
         else:
 
             print(f"User Registered: {username}")
             print(f"User Type: {user_type}")
-            print(f"Address: {address}")
             print(f"Phone: {phone}")
             messagebox.showinfo("Success", "Registration Successful!")
             register_window.destroy() 
