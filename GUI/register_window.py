@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from database.db_functions import register_user
 
 def open_register_window():
     register_window = Tk()  
@@ -33,7 +34,6 @@ def open_register_window():
     phone_entry.pack(pady=5)
 
     def validate_and_register():
-
         username = username_entry.get()
         password = password_entry.get()
         phone = phone_entry.get()
@@ -42,12 +42,15 @@ def open_register_window():
         if username == "" or password == ""  or phone == "" or user_type == "Select User Type":
             messagebox.showerror("Error", "All fields are required!")
         else:
+            result = register_user(username, password, phone, user_type)
 
-            print(f"User Registered: {username}")
-            print(f"User Type: {user_type}")
-            print(f"Phone: {phone}")
-            messagebox.showinfo("Success", "Registration Successful!")
-            register_window.destroy() 
+            if result == "exists":
+                messagebox.showerror("Error", "User already registered!")
+            elif result == "success":
+                messagebox.showinfo("Success", "Registration Successful!")
+                register_window.destroy()
+            else:
+                messagebox.showerror("Error", "Registration failed. Please try again.")
 
     Button(register_window, text="Register", bg='#2685f6', fg='white', font=('Arial', 12, 'bold'),
            width=15, command=validate_and_register).pack(pady=15)
