@@ -49,6 +49,7 @@ def open_register_window():
             elif result == "success":
                 messagebox.showinfo("Success", "Registration Successful!")
                 register_window.destroy()
+                open_login_window()
             else:
                 messagebox.showerror("Error", "Registration failed. Please try again.")
 
@@ -58,7 +59,7 @@ def open_register_window():
     Button(register_window, text="Close", bg='white', fg='#2685f6', font=('Arial', 11, 'bold'),
            border=0, command=register_window.destroy).pack(pady=5)
     
-    Button(register_window, text="⬅Login", bg='#2685f6', fg='white', font=('Arial', 11, 'bold'),
+    Button(register_window, text="Login", bg='#2685f6', fg='white', font=('Arial', 11, 'bold'),
            border=0, command=lambda: [register_window.destroy(), open_login_window()]).place(x=15, y=15)
 
     register_window.mainloop()
