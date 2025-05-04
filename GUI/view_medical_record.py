@@ -25,25 +25,29 @@ def view_medical_records_gui(user_type):
     search_frame = Frame(root, bg=WHITE)
     search_frame.pack(pady=10)
 
-    Label(search_frame, text="Patient Name:", font=FONT, bg=WHITE).pack(side=LEFT, padx=5)
-    name_entry = Entry(search_frame, font=FONT, width=30)
-    name_entry.pack(side=LEFT, padx=5)
+    # Patient ID input
+    Label(search_frame, text="Patient ID:", font=FONT, bg=WHITE).pack(side=LEFT, padx=5)
+    id_entry = Entry(search_frame, font=FONT, width=30)
+    id_entry.pack(side=LEFT, padx=5)
 
     def search_records():
-        patient_name = name_entry.get().strip()
-        if not patient_name:
-            messagebox.showwarning("Input Error", "Please enter a patient name to search.")
+        patient_id = id_entry.get().strip()
+        if not patient_id:
+            messagebox.showwarning("Input Error", "Please enter a patient ID to search.")
             return
 
-        query = "SELECT * FROM records WHERE name LIKE %s"
-        cursor.execute(query, (f"%{patient_name}%",))
-        results = cursor.fetchall()
-        tree.delete(*tree.get_children())
-        for row in results:
-            tree.insert("", "end", values=row)
+        try:
+            query = "SELECT * FROM medical_records WHERE patient_id = %s"
+            cursor.execute(query, (patient_id,))
+            results = cursor.fetchall()
+            tree.delete(*tree.get_children())
+            for row in results:
+                tree.insert("", "end", values=row)
+        except Exception as e:
+            messagebox.showerror("Database Error", f"Failed to search records:\n{e}")
 
     def view_all_records():
-        cursor.execute("SELECT * FROM records")
+        cursor.execute("SELECT * FROM medical_records")
         results = cursor.fetchall()
         tree.delete(*tree.get_children())
         for row in results:
@@ -54,7 +58,7 @@ def view_medical_records_gui(user_type):
     if user_type == "doctor":
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
 
-    columns = ("ID", "Name", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
+    columns = ("ID", "Patient ID", "Doctor ID", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
     tree = ttk.Treeview(root, columns=columns, show="headings", height=20)
     for col in columns:
         tree.heading(col, text=col)
@@ -70,4 +74,4 @@ if __name__ == "__main__":
     view_medical_records_gui("doctor") 
 
 if __name__ == "__main__":
-    view_medical_records_gui("patient")  
+    view_medical_records_gui("patient")
