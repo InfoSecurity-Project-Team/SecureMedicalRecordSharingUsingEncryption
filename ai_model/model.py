@@ -1,4 +1,6 @@
 import pandas as pd
+import pickle
+
 
 def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
     """
@@ -16,8 +18,9 @@ def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
     dataframe['Gender'] = dataframe['Gender'].replace({'Male': 1, 'Female': 0})
     return dataframe
 
-def diagnose(data: dict):
-    pass
+def diagnose(dataframe: pd.DataFrame) -> str:
+    model = pickle.load(open('disease_diagnosis_model.pkl', 'rb'))
+
 
 
 def main():
