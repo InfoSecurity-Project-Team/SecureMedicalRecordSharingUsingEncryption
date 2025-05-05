@@ -3,17 +3,30 @@ from crypto import encrypt_data, decrypt_data
 
 def authenticate_user(username, password, user_type):
     table = "doctors" if user_type.lower() == "doctor" else "patients"
-    query = f"SELECT * FROM {table} WHERE name=%s AND password=%s"
+    query = f"SELECT * FROM {table}"
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute(query, (username, password))
-    result = cursor.fetchone()
+    cursor.execute(query)
+    records = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
-    return result
+    for record in records:
+        decrypted_name = decrypt_data(record['name'])
+        decrypted_password = decrypt_data(record['password'])
+
+        if decrypted_name == username and decrypted_password == password:
+            # Decrypt all other fields in the record before returning (optional)
+            record['name'] = decrypted_name
+            record['password'] = decrypted_password
+            if 'phone' in record:
+                record['phone'] = decrypt_data(record['phone'])
+            return record
+
+    return None
+
 
 def register_user(username, password, phone, user_type):
     try:
