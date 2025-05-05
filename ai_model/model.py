@@ -1,6 +1,12 @@
 import pandas as pd
 
 def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
+    """
+    Preprocess the data which is to be passed to the model for prediction of target
+
+    :param dataframe: The data of the patient (symptoms, age, gender)
+    :return: DataFrame (padnas)
+    """
     boolean_columns = ['Fever', 'Cough', 'Fatigue', 'Difficulty Breathing']
     categorical_columns = ['Blood Pressure', 'Cholesterol Level']
     for col in boolean_columns:
