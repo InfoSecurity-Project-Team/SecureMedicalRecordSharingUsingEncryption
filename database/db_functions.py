@@ -1,4 +1,5 @@
 from .db_connection import get_connection
+from crypto import encrypt_data, decrypt_data
 
 def authenticate_user(username, password, user_type):
     table = "doctors" if user_type.lower() == "doctor" else "patients"
@@ -21,17 +22,23 @@ def register_user(username, password, phone, user_type):
 
         table = "doctors" if user_type.lower() == "doctor" else "patients"
 
-        # Check if user already exists
-        check_query = f"SELECT * FROM {table} WHERE name=%s"
-        cursor.execute(check_query, (username,))
-        existing_user = cursor.fetchone()
+        # Check if the username already exists
+        cursor.execute(f"SELECT name FROM {table}")
+        existing_usernames = cursor.fetchall()
 
-        if existing_user:
-            return "exists"
+        for (encrypted_name,) in existing_usernames:
+            decrypted_name = decrypt_data(encrypted_name)
+            if decrypted_name == username:
+                return "exists"
+
+        # Encrypt the input values
+        encrypted_username = encrypt_data(username)
+        encrypted_password = encrypt_data(password)
+        encrypted_phone = encrypt_data(phone)
 
         # Insert new user
         insert_query = f"INSERT INTO {table} (name, password, phone) VALUES (%s, %s, %s)"
-        cursor.execute(insert_query, (username, password, phone))
+        cursor.execute(insert_query, (encrypted_username, encrypted_password, encrypted_phone))
         conn.commit()
 
         return "success"
@@ -43,4 +50,5 @@ def register_user(username, password, phone, user_type):
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+
 
