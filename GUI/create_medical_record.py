@@ -4,13 +4,14 @@ from PIL import Image, ImageTk
 import datetime
 from database.db_connection import get_connection
 from database.db_functions import get_patient_id_by_name
+from ai_model.model import diagnose  
 
 BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
-def submit_record(name, age, gender, symptoms, doctor_name, notes_func, window, symptom_vars):
-    if not all([name.get(), age.get(), gender.get(), symptoms.get("1.0", END).strip(), doctor_name.get()]):
+def submit_record(name, age, gender, symptoms, doctor_name, doctor_id_entry, notes_func, window, symptom_vars):
+    if not all([name.get(), age.get(), gender.get(), symptoms.get("1.0", END).strip(), doctor_name.get(), doctor_id_entry.get()]):
         messagebox.showwarning("Warning", "Please fill in all fields.")
         return
 
@@ -28,10 +29,10 @@ def submit_record(name, age, gender, symptoms, doctor_name, notes_func, window, 
 
         query = """
             INSERT INTO diagnosis_records (
-                name, age, gender, symptoms_description, doctor_name, notes,
+                name, age, gender, symptoms_description, doctor_name, doctor_id, notes,
                 fever, cough, difficulty_breathing, fatigue,
                 blood_pressure, cholesterol_level, timestamp
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
         data = (
@@ -40,6 +41,7 @@ def submit_record(name, age, gender, symptoms, doctor_name, notes_func, window, 
             gender.get(),
             symptoms.get("1.0", END).strip(),
             doctor_name.get(),
+            doctor_id_entry.get(),
             notes_func(),
             symptom_vars["fever"].get(),
             symptom_vars["cough"].get(),
@@ -56,7 +58,27 @@ def submit_record(name, age, gender, symptoms, doctor_name, notes_func, window, 
         conn.close()
 
         messagebox.showinfo("Success", "Medical record saved to database successfully!")
-        window.destroy() 
+
+        # Prepare dict and call diagnose
+        diagnosis_input = {
+            'Fever': [symptom_vars["fever"].get()],
+            'Cough': [symptom_vars["cough"].get()],
+            'Fatigue': [symptom_vars["fatigue"].get()],
+            'Difficulty Breathing': [symptom_vars["difficulty breathing"].get()],
+            'Age': [int(age.get())],
+            'Gender': [gender.get()],
+            'Blood Pressure': [symptom_vars["blood pressure"].get()],
+            'Cholesterol Level': [symptom_vars["cholesterol level"].get()]
+        }
+
+        try:
+            disease = diagnose(diagnosis_input)
+            messagebox.showinfo("Diagnosis Result", f"Predicted Disease: {disease}")
+        except Exception as diag_err:
+            messagebox.showerror("Diagnosis Failed", f"Error while diagnosing: {diag_err}")
+
+        window.destroy()
+
     except Exception as e:
         messagebox.showerror("Error", f"Failed to save record: {e}")
 
@@ -103,7 +125,6 @@ def create_medical_record_gui():
     Radiobutton(gender_frame, text="Male", variable=gender_var, value="Male", font=FONT, bg=WHITE).pack(side=LEFT)
     Radiobutton(gender_frame, text="Female", variable=gender_var, value="Female", font=FONT, bg=WHITE).pack(side=LEFT)
 
-    # --- Symptom Inputs ---
     symptom_questions = {
         "fever": ["Yes", "No"],
         "cough": ["Yes", "No"],
@@ -134,9 +155,12 @@ def create_medical_record_gui():
     form_label("Doctor Name:", next_row + 1)
     doctor_entry = form_entry(next_row + 1)
 
-    form_label("Additional Notes:", next_row + 2)
+    form_label("Doctor ID:", next_row + 2)
+    doctor_id_entry = form_entry(next_row + 2)
+
+    form_label("Additional Notes:", next_row + 3)
     notes_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
-    notes_text.grid(row=next_row + 2, column=1, pady=5)
+    notes_text.grid(row=next_row + 3, column=1, pady=5)
 
     def compile_notes():
         return notes_text.get("1.0", END).strip()
@@ -145,9 +169,10 @@ def create_medical_record_gui():
            font=("Segoe UI", 12, "bold"), width=20,
            command=lambda: submit_record(
                name_entry, age_entry, gender_var, symptoms_text,
-               doctor_entry, compile_notes, root, symptom_vars
-           )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
+               doctor_entry, doctor_id_entry, compile_notes, root, symptom_vars
+           )).grid(row=next_row + 4, column=0, columnspan=2, pady=20)
 
     root.mainloop()
 
 create_medical_record_gui()
+ 
