@@ -91,9 +91,7 @@ def create_login_frame():
 
         if user:
             root.destroy()
-            if selected_user_type == "Doctor":
-                create_medical_record_gui()
-            else:
+            if selected_user_type == "Doctor" or "Patient":
                 view_medical_records_gui(user_type=selected_user_type)
         else:
             messagebox.showerror("Error", "Incorrect credentials, please try again")
