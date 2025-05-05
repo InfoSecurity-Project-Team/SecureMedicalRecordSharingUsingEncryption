@@ -56,8 +56,6 @@ def open_register_window():
     Button(register_window, text="Register", bg='#2685f6', fg='white', font=('Arial', 12, 'bold'),
            width=15, command=validate_and_register).pack(pady=15)
 
-    Button(register_window, text="Close", bg='white', fg='#2685f6', font=('Arial', 11, 'bold'),
-           border=0, command=register_window.destroy).pack(pady=5)
     
     Button(register_window, text="Login", bg='#2685f6', fg='white', font=('Arial', 11, 'bold'),
            border=0, command=lambda: [register_window.destroy(), open_login_window()]).place(x=15, y=15)
