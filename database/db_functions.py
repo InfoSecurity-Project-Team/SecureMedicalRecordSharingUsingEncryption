@@ -108,6 +108,9 @@ def insert_encrypted_medical_record(
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Join symptom list into a string (comma-separated or newline-separated)
+        symptom_str = ", ".join(symptoms)
+
         query = """
             INSERT INTO medical_records (
                 patient_id, doctor_id, age, gender,
@@ -120,7 +123,7 @@ def insert_encrypted_medical_record(
             doctor_id,
             encrypt_data(str(age)),
             gender,
-            encrypt_data(symptoms),
+            encrypt_data(symptom_str),
             encrypt_data(diagnosis),
             encrypt_data(additional_notes) if additional_notes else None,
             datetime.datetime.now()
@@ -135,6 +138,7 @@ def insert_encrypted_medical_record(
     except Exception as e:
         print("Error inserting encrypted medical record:", e)
         return False
+
 
 
 
