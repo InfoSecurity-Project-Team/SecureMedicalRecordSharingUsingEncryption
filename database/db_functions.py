@@ -65,3 +65,29 @@ def register_user(username, password, phone, user_type):
         if conn: conn.close()
 
 
+def get_patient_id_by_name(patient_name):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = "SELECT patient_id, name FROM patients"
+        cursor.execute(query)
+        records = cursor.fetchall()
+
+        for record in records:
+            decrypted_name = decrypt_data(record['name'])
+            if decrypted_name == patient_name:
+                return record['patient_id']
+
+        return None  # No match found
+
+    except Exception as e:
+        print(f"[ERROR] Failed to get patient ID: {e}")
+        return None
+
+    finally:
+        if cursor: cursor.close()
+        if conn: conn.close()
+
+
+
