@@ -140,6 +140,57 @@ def insert_encrypted_medical_record(
         return False
 
 
+def get_decrypted_medical_records(patient_id=None):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        if patient_id:
+            query = """
+                SELECT mr.record_id, mr.patient_id, mr.doctor_id, d.name AS doctor_name,
+                       mr.age, mr.gender, mr.symptoms, mr.diagnosis,
+                       mr.additional_notes, mr.date
+                FROM medical_records mr
+                JOIN doctors d ON mr.doctor_id = d.doctor_id
+                WHERE mr.patient_id = %s
+            """
+            cursor.execute(query, (patient_id,))
+        else:
+            query = """
+                SELECT mr.record_id, mr.patient_id, mr.doctor_id, d.name AS doctor_name,
+                       mr.age, mr.gender, mr.symptoms, mr.diagnosis,
+                       mr.additional_notes, mr.date
+                FROM medical_records mr
+                JOIN doctors d ON mr.doctor_id = d.doctor_id
+            """
+            cursor.execute(query)
+
+        records = cursor.fetchall()
+        decrypted_results = []
+
+        for row in records:
+            decrypted_row = (
+                row[0],                             # record_id
+                row[1],                             # patient_id
+                row[2],                             # doctor_id
+                decrypt_data(row[4]),               # age (encrypted)
+                row[5],                             # gender
+                decrypt_data(row[6]),               # symptoms (encrypted)
+                decrypt_data(row[7]),               # diagnosis (encrypted)
+                row[9],                             # date (timestamp)
+                decrypt_data(row[3]),               # doctor_name (from JOIN)
+                decrypt_data(row[8]) if row[8] else ""  # additional_notes
+            )
+            decrypted_results.append(decrypted_row)
+
+        cursor.close()
+        conn.close()
+        return decrypted_results
+
+    except Exception as e:
+        print("Error fetching decrypted medical records:", e)
+        return []
+
 
 
 
