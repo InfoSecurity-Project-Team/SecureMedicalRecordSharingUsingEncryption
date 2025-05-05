@@ -1,47 +1,59 @@
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
+import datetime
+from db_connection import get_connection  
 
 BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
-# --- Diagnosis Suggestion Logic ---
-def auto_suggest_diagnosis(question_vars):
-    answers = {q.lower(): v.get() for q, v in question_vars.items()}
-
-    if (answers.get("fever?", "") == "Yes" and
-        answers.get("cough?", "") == "Yes" and
-        answers.get("loss of taste or smell?", "") == "Yes" and
-        answers.get("fatigue?", "") == "Yes"):
-        return "Possible COVID-19"
-
-    elif (answers.get("cough?", "") == "Yes" and
-          answers.get("sore throat?", "") == "Yes" and
-          answers.get("headache?", "") == "Yes"):
-        return "Common Cold"
-
-    elif (answers.get("fever?", "") == "Yes" and
-          answers.get("fatigue?", "") == "Yes" and
-          answers.get("body aches?", "") == "Yes"):
-        return "Influenza (Flu)"
-
-    elif (answers.get("difficulty breathing?", "") == "Yes" and
-          answers.get("chest pain?", "") == "Yes"):
-        return "Respiratory Infection"
-
-    elif (answers.get("recent travel?", "") == "Yes" and
-          (answers.get("fever?", "") == "Yes" or answers.get("cough?", "") == "Yes")):
-        return "Travel-related Illness Alert"
-
-    return "General Checkup / No Clear Diagnosis"
-
-# --- Function to Submit the Medical Record ---
-def submit_record(name, age, gender, symptoms, diagnosis, doctor_name, notes_func, window):
-    if not all([name.get(), age.get(), gender.get(), symptoms.get("1.0", END).strip(),
-                diagnosis.get("1.0", END).strip(), doctor_name.get()]):
+def submit_record(name, age, gender, symptoms, doctor_name, notes_func, window, symptom_vars):
+    if not all([name.get(), age.get(), gender.get(), symptoms.get("1.0", END).strip(), doctor_name.get()]):
         messagebox.showwarning("Warning", "Please fill in all fields.")
         return
+
+    try:
+        conn = get_connection()
+        if conn is None:
+            messagebox.showerror("Error", "Database connection failed.")
+            return
+        cursor = conn.cursor()
+
+
+        query = """
+            INSERT INTO diagnosis_records (
+                name, age, gender, symptoms_description, doctor_name, notes,
+                fever, cough, difficulty_breathing, fatigue,
+                blood_pressure, cholesterol_level, timestamp
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+        data = (
+            name.get(),
+            int(age.get()),
+            gender.get(),
+            symptoms.get("1.0", END).strip(),
+            doctor_name.get(),
+            notes_func(),
+            symptom_vars["fever"].get(),
+            symptom_vars["cough"].get(),
+            symptom_vars["difficulty breathing"].get(),
+            symptom_vars["fatigue"].get(),
+            symptom_vars["blood pressure"].get(),
+            symptom_vars["cholesterol level"].get(),
+            datetime.datetime.now()
+        )
+
+        cursor.execute(query, data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        messagebox.showinfo("Success", "Medical record saved to database successfully!")
+        window.destroy() 
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to save record: {e}")
 
 def create_medical_record_gui():
     root = Tk()
@@ -55,7 +67,7 @@ def create_medical_record_gui():
         img = img.resize((500, 500))
         photo = ImageTk.PhotoImage(img)
         image_label = Label(root, image=photo, bg=WHITE)
-        image_label.image = photo  
+        image_label.image = photo
         image_label.place(x=50, y=100)
     except Exception as e:
         print("Image failed to load:", e)
@@ -86,58 +98,50 @@ def create_medical_record_gui():
     Radiobutton(gender_frame, text="Male", variable=gender_var, value="Male", font=FONT, bg=WHITE).pack(side=LEFT)
     Radiobutton(gender_frame, text="Female", variable=gender_var, value="Female", font=FONT, bg=WHITE).pack(side=LEFT)
 
-    # Diagnosis Questions with Auto-suggestion
-    questions = [
-        "Fever?", "Cough?", "Loss of Taste or Smell?", "Fatigue?",
-        "Sore Throat?", "Headache?", "Body Aches?", "Difficulty Breathing?",
-        "Chest Pain?", "Recent Travel?"
-    ]
+    # --- Symptom Inputs ---
+    symptom_questions = {
+        "fever": ["Yes", "No"],
+        "cough": ["Yes", "No"],
+        "difficulty breathing": ["Yes", "No"],
+        "fatigue": ["Yes", "No"],
+        "blood pressure": ["Low", "Normal", "High"],
+        "cholesterol level": ["Low", "Normal", "High"]
+    }
 
-    question_vars = {}
-
-    def update_diagnosis(*args):
-        suggestion = auto_suggest_diagnosis(question_vars)
-        diagnosis_text.delete("1.0", END)
-        diagnosis_text.insert(END, suggestion)
-
+    symptom_vars = {}
     row_offset = 4
-    for idx, question in enumerate(questions):
-        Label(form_frame, text=question, font=FONT, bg=WHITE).grid(row=row_offset + idx, column=0, sticky="w", pady=2)
-        var = StringVar()
-        var.set("No")
-        var.trace_add("write", update_diagnosis)
-        question_vars[question.lower()] = var
-        Radiobutton(form_frame, text="Yes", variable=var, value="Yes", bg=WHITE).grid(row=row_offset + idx, column=1, sticky="w")
-        Radiobutton(form_frame, text="No", variable=var, value="No", bg=WHITE).grid(row=row_offset + idx, column=1, sticky="e")
 
-    next_row = row_offset + len(questions)
+    for i, (symptom, options) in enumerate(symptom_questions.items()):
+        form_label(symptom.replace('_', ' ').title() + ":", row_offset + i)
+        var = StringVar(value=options[0])
+        symptom_vars[symptom] = var
+        frame = Frame(form_frame, bg=WHITE)
+        frame.grid(row=row_offset + i, column=1, sticky="w")
+        for opt in options:
+            Radiobutton(frame, text=opt, variable=var, value=opt, bg=WHITE).pack(side=LEFT)
+
+    next_row = row_offset + len(symptom_questions)
 
     form_label("Symptoms:", next_row)
     symptoms_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
     symptoms_text.grid(row=next_row, column=1, pady=5)
 
-    form_label("Diagnosis:", next_row + 1)
-    diagnosis_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
-    diagnosis_text.grid(row=next_row + 1, column=1, pady=5)
+    form_label("Doctor Name:", next_row + 1)
+    doctor_entry = form_entry(next_row + 1)
 
-    form_label("Doctor Name:", next_row + 2)
-    doctor_entry = form_entry(next_row + 2)
-
-    form_label("Additional Notes:", next_row + 3)
+    form_label("Additional Notes:", next_row + 2)
     notes_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
-    notes_text.grid(row=next_row + 3, column=1, pady=5)
+    notes_text.grid(row=next_row + 2, column=1, pady=5)
 
     def compile_notes():
-        diagnosis_answers = "\n".join([f"{q} {v.get()}" for q, v in question_vars.items()])
-        manual_notes = notes_text.get("1.0", END).strip()
-        return f"{diagnosis_answers}\nDoctor Notes: {manual_notes}"
+        return notes_text.get("1.0", END).strip()
 
     Button(form_frame, text="Submit Record", bg=BLUE, fg=WHITE,
            font=("Segoe UI", 12, "bold"), width=20,
            command=lambda: submit_record(
                name_entry, age_entry, gender_var, symptoms_text,
-               diagnosis_text, doctor_entry, compile_notes, root
-           )).grid(row=next_row + 4, column=0, columnspan=2, pady=20)
+               doctor_entry, compile_notes, root, symptom_vars
+           )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
 
     root.mainloop()
 
