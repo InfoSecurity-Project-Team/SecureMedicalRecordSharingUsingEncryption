@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-
+pd.set_option('future.no_silent_downcasting', True)
 
 def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
     """
