@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from database.db_connection import get_connection
-from create_medical_record import create_medical_record_gui  
+from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_encrypted_medical_record
+from create_medical_record import create_medical_record_gui
 
 BLUE = "#2685f6"
 WHITE = "white"
@@ -37,21 +38,23 @@ def view_medical_records_gui(user_type="doctor"):
             return
 
         try:
-            query = "SELECT * FROM medical_records WHERE patient_id = %s"
-            cursor.execute(query, (patient_id,))
-            results = cursor.fetchall()
+            # Fetch encrypted records based on patient_id
+            records = get_encrypted_medical_record(patient_id)
             tree.delete(*tree.get_children())
-            for row in results:
-                tree.insert("", "end", values=row)
+            for record in records:
+                tree.insert("", "end", values=record)
         except Exception as e:
             messagebox.showerror("Database Error", f"Failed to search records:\n{e}")
 
     def view_all_records():
-        cursor.execute("SELECT * FROM medical_records")
-        results = cursor.fetchall()
-        tree.delete(*tree.get_children())
-        for row in results:
-            tree.insert("", "end", values=row)
+        try:
+            # Fetch all encrypted records if no patient_id is provided
+            records = get_encrypted_medical_record()
+            tree.delete(*tree.get_children())
+            for record in records:
+                tree.insert("", "end", values=record)
+        except Exception as e:
+            messagebox.showerror("Database Error", f"Failed to fetch all records:\n{e}")
 
     Button(search_frame, text="Search", font=FONT, bg=BLUE, fg=WHITE, command=search_records).pack(side=LEFT, padx=10)
 
@@ -72,8 +75,19 @@ def view_medical_records_gui(user_type="doctor"):
     cursor.close()
     db.close()
 
+def insert_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosis, visit_date, doctor, notes):
+    try:
+        # Convert symptoms to list format if it's a string
+        if isinstance(symptoms, str):
+            symptoms = symptoms.split(',')  # Split string into list
+        
+        # Insert encrypted record with Symptoms as a list
+        insert_encrypted_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosis, visit_date, doctor, notes)
+        messagebox.showinfo("Success", "Medical record inserted successfully.")
+    except Exception as e:
+        messagebox.showerror("Insert Error", f"Failed to insert record:\n{e}")
+
 if __name__ == "__main__":
     view_medical_records_gui("doctor")
 
-if __name__ == "__main__":
     view_medical_records_gui("patient")
