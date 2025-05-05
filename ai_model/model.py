@@ -18,7 +18,8 @@ def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
     dataframe['Gender'] = dataframe['Gender'].replace({'Male': 1, 'Female': 0})
     return dataframe
 
-def diagnose(dataframe: pd.DataFrame) -> str:
+def diagnose(data: dict) -> str:
+    dataframe = pd.DataFrame(data=data)
     model = pickle.load(open('disease_diagnosis_model.pkl', 'rb'))
 
 
