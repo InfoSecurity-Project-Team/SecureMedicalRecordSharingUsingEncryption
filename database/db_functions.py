@@ -3,6 +3,8 @@ from crypto import encrypt_data, decrypt_data
 
 def authenticate_user(username, password, user_type):
     table = "doctors" if user_type.lower() == "doctor" else "patients"
+    id_field = "doctor_id" if user_type.lower() == "doctor" else "patient_id"
+
     query = f"SELECT * FROM {table}"
 
     conn = get_connection()
@@ -18,14 +20,21 @@ def authenticate_user(username, password, user_type):
         decrypted_password = decrypt_data(record['password'])
 
         if decrypted_name == username and decrypted_password == password:
-            # Decrypt all other fields in the record before returning (optional)
             record['name'] = decrypted_name
             record['password'] = decrypted_password
             if 'phone' in record:
                 record['phone'] = decrypt_data(record['phone'])
-            return record
+
+            return {
+                "id": record[id_field],         # Include doctor_id or patient_id
+                "name": record['name'],
+                "password": record['password'],
+                "phone": record.get('phone', ""),
+                "user_type": user_type
+            }
 
     return None
+
 
 
 def register_user(username, password, phone, user_type):
