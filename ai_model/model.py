@@ -1,6 +1,6 @@
 import pandas as pd
 import pickle
-pd.set_option('future.no_silent_downcasting', True)
+pd.set_option('future.no_silent_downcasting', True) # Ignores downcasting warning from replace()
 
 def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
     """
@@ -19,6 +19,11 @@ def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
     return dataframe
 
 def diagnose(data: dict) -> str:
+    """
+    Predicts the disease from given symptoms and other details.
+    :param data: A dict containing all the patient details
+    :return: str: Disease name
+    """
     dataframe = pd.DataFrame(data=data)
     model = pickle.load(open('disease_diagnosis_model.pkl', 'rb'))
     df_processed = preprocess(dataframe)

@@ -1,0 +1,1 @@
+from .register_window import open_register_window
