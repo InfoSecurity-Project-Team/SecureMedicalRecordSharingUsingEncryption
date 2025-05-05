@@ -10,8 +10,8 @@ BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
-def submit_record(name, age, gender, symptoms, doctor_name, doctor_id_entry, notes_func, window, symptom_vars):
-    if not all([name.get(), age.get(), gender.get(), symptoms.get("1.0", END).strip(), doctor_name.get(), doctor_id_entry.get()]):
+def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, window, symptom_vars):
+    if not all([name.get(), age.get(), gender.get(), doctor_name.get(), doctor_id_entry.get()]):
         messagebox.showwarning("Warning", "Please fill in all fields.")
         return
 
@@ -39,7 +39,7 @@ def submit_record(name, age, gender, symptoms, doctor_name, doctor_id_entry, not
             name.get(),
             int(age.get()),
             gender.get(),
-            symptoms.get("1.0", END).strip(),
+            "",  # Symptoms description removed from GUI, so keep empty
             doctor_name.get(),
             doctor_id_entry.get(),
             notes_func(),
@@ -148,19 +148,15 @@ def create_medical_record_gui():
 
     next_row = row_offset + len(symptom_questions)
 
-    form_label("Symptoms:", next_row)
-    symptoms_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
-    symptoms_text.grid(row=next_row, column=1, pady=5)
+    form_label("Doctor Name:", next_row)
+    doctor_entry = form_entry(next_row)
 
-    form_label("Doctor Name:", next_row + 1)
-    doctor_entry = form_entry(next_row + 1)
+    form_label("Doctor ID:", next_row + 1)
+    doctor_id_entry = form_entry(next_row + 1)
 
-    form_label("Doctor ID:", next_row + 2)
-    doctor_id_entry = form_entry(next_row + 2)
-
-    form_label("Additional Notes:", next_row + 3)
+    form_label("Additional Notes:", next_row + 2)
     notes_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
-    notes_text.grid(row=next_row + 3, column=1, pady=5)
+    notes_text.grid(row=next_row + 2, column=1, pady=5)
 
     def compile_notes():
         return notes_text.get("1.0", END).strip()
@@ -168,11 +164,11 @@ def create_medical_record_gui():
     Button(form_frame, text="Submit Record", bg=BLUE, fg=WHITE,
            font=("Segoe UI", 12, "bold"), width=20,
            command=lambda: submit_record(
-               name_entry, age_entry, gender_var, symptoms_text,
+               name_entry, age_entry, gender_var,
                doctor_entry, doctor_id_entry, compile_notes, root, symptom_vars
-           )).grid(row=next_row + 4, column=0, columnspan=2, pady=20)
+           )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
 
     root.mainloop()
 
-create_medical_record_gui()
- 
+if __name__ == '__main__':
+    create_medical_record_gui()
