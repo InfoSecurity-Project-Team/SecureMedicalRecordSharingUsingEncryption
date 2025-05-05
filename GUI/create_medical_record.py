@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
-import datetime
 from database.db_connection import get_connection
-from database.db_functions import get_patient_id_by_name
+from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_record
 from ai_model.model import diagnose
 from view_medical_record import view_medical_records_gui
 
@@ -28,43 +27,21 @@ def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, w
             messagebox.showerror("Error", "Patient not found in the database.")
             return
 
-        query = """
-            INSERT INTO diagnosis_records (
-                name, age, gender, symptoms_description, doctor_name, doctor_id, notes,
-                fever, cough, difficulty_breathing, fatigue,
-                blood_pressure, cholesterol_level, timestamp
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
+        # Prepare symptoms list for encryption
+        symptom_list = [
+            f"Fever: {symptom_vars['fever'].get()}",
+            f"Cough: {symptom_vars['cough'].get()}",
+            f"Difficult Breathing: {symptom_vars['difficulty breathing'].get()}",
+            f"Fatigue: {symptom_vars['fatigue'].get()}",
+            f"Blood Pressure: {symptom_vars['blood pressure'].get()}",
+            f"Cholesterol Level: {symptom_vars['cholesterol level'].get()}"
+        ]
 
-        data = (
-            name.get(),
-            int(age.get()),
-            gender.get(),
-            "",
-            doctor_name.get(),
-            doctor_id_entry.get(),
-            notes_func(),
-            symptom_vars["fever"].get(),
-            symptom_vars["cough"].get(),
-            symptom_vars["difficulty breathing"].get(),
-            symptom_vars["fatigue"].get(),
-            symptom_vars["blood pressure"].get(),
-            symptom_vars["cholesterol level"].get(),
-            datetime.datetime.now()
-        )
-
-        cursor.execute(query, data)
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        messagebox.showinfo("Success", "Medical record saved to database successfully!")
-
-        # Prepare dict and call diagnose
+        # Compile diagnosis input for AI model
         diagnosis_input = {
             'Fever': [symptom_vars["fever"].get()],
             'Cough': [symptom_vars["cough"].get()],
-            'Fatigue': [symptom_vars["fatigue"].get()],
+            'Fatigue': [symptom_vars["fatigue"].get()] ,
             'Difficulty Breathing': [symptom_vars["difficulty breathing"].get()],
             'Age': [int(age.get())],
             'Gender': [gender.get()],
@@ -72,16 +49,46 @@ def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, w
             'Cholesterol Level': [symptom_vars["cholesterol level"].get()]
         }
 
+        # Diagnose the disease
         try:
             disease = diagnose(diagnosis_input)
             messagebox.showinfo("Diagnosis Result", f"Predicted Disease: {disease}")
         except Exception as diag_err:
             messagebox.showerror("Diagnosis Failed", f"Error while diagnosing: {diag_err}")
 
+        # Insert the medical record into the encrypted database
+        encrypted_success = insert_encrypted_medical_record(
+            patient_id=patient_id,
+            doctor_id=doctor_id_entry.get(),
+            age=age.get(),
+            gender=gender.get(),
+            symptoms=symptom_list,
+            diagnosis=disease,
+            additional_notes=notes_func()
+        )
+
+        if encrypted_success:
+            messagebox.showinfo("Success", "Encrypted medical record saved successfully!")
+        else:
+            messagebox.showwarning("Warning", "Record saved in diagnosis_records but not encrypted in blockchain.")
+
         window.destroy()
 
     except Exception as e:
         messagebox.showerror("Error", f"Failed to save record: {e}")
+
+def display_records(records):
+    # Function to display decrypted records (this could open a new window or update a text box)
+    record_window = Toplevel()
+    record_window.title("Medical Records")
+    
+    record_text = Text(record_window, height=20, width=80)
+    record_text.pack()
+    
+    for record in records:
+        record_text.insert(END, f"{record}\n")
+    
+    record_window.mainloop()
 
 def create_medical_record_gui():
     root = Tk()
@@ -168,11 +175,11 @@ def create_medical_record_gui():
                name_entry, age_entry, gender_var,
                doctor_entry, doctor_id_entry, compile_notes, root, symptom_vars
            )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
-    
+
     Button(form_frame, text="View Records", bg=BLUE, fg=WHITE,
-       font=("Segoe UI", 12, "bold"), width=20,
-       command=lambda: view_medical_records_gui("doctor")
-       ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
+           font=("Segoe UI", 12, "bold"), width=20,
+           command=lambda: display_records(get_decrypted_medical_record(name_entry.get()))
+           ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
 
     root.mainloop()
 
