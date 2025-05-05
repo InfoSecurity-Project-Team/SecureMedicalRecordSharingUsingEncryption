@@ -102,7 +102,7 @@ def get_patient_id_by_name(patient_name):
 
 def insert_encrypted_medical_record(
     patient_id, doctor_id, age, gender,
-    symptoms, diagnosis, additional_notes=""
+    symptoms: list, diagnosis, additional_notes=""
 ):
     try:
         conn = get_connection()
