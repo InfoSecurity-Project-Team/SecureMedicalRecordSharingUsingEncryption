@@ -4,13 +4,8 @@ from PIL import Image, ImageTk
 from tkinter import ttk
 from .register_window import open_register_window
 from database.db_functions import authenticate_user
-
-def open_dashboard():
-    dashboard = Tk()
-    dashboard.title("Dashboard")
-    dashboard.geometry("400x300")
-    Label(dashboard, text="Welcome to the dashboard!", font=('Arial', 16)).pack(pady=50)
-    dashboard.mainloop()
+from .create_medical_record import create_medical_record_gui
+from .view_medical_record import view_medical_records_gui
 
 root = Tk()
 root.title("Medical Records")
@@ -82,15 +77,26 @@ def create_login_frame():
     def login():
         entered_user = username.get("1.0", "end-1c").strip()
         entered_pass = password.get("1.0", "end-1c").strip()
-        user = authenticate_user(entered_user, entered_pass, user_type_var.get())
-        if user_type_dropdown=='':
-            messagebox.showerror("Error","user type not selected")
-        elif user:
+        selected_user_type = user_type_var.get()
+
+        if selected_user_type == "Select User Type":
+            messagebox.showerror("Error", "User type not selected")
+            return
+
+        if not entered_user or not entered_pass:
+            messagebox.showerror("Error", "Username and password cannot be empty")
+            return
+
+        user = authenticate_user(entered_user, entered_pass, selected_user_type)
+
+        if user:
             root.destroy()
-            open_dashboard()
-            
+            if selected_user_type == "Doctor":
+                create_medical_record_gui()
+            else:
+                view_medical_records_gui(user_type=selected_user_type)
         else:
-            messagebox.showerror("Error", "Incorrect credentials written please try again")
+            messagebox.showerror("Error", "Incorrect credentials, please try again")
 
     Button(pat_frame, width=12, height=2, border=0, bg='#2685f6', fg='white',
            cursor='hand2', text='Login', font=('Arial', 10, 'bold'), command=login).place(x=215, y=330)
