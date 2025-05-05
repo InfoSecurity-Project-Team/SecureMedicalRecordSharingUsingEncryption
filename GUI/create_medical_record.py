@@ -4,7 +4,8 @@ from PIL import Image, ImageTk
 import datetime
 from database.db_connection import get_connection
 from database.db_functions import get_patient_id_by_name
-from ai_model.model import diagnose  
+from ai_model.model import diagnose
+from view_medical_record import view_medical_records_gui
 
 BLUE = "#2685f6"
 WHITE = "white"
@@ -39,7 +40,7 @@ def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, w
             name.get(),
             int(age.get()),
             gender.get(),
-            "",  # Symptoms description removed from GUI, so keep empty
+            "",
             doctor_name.get(),
             doctor_id_entry.get(),
             notes_func(),
@@ -167,8 +168,13 @@ def create_medical_record_gui():
                name_entry, age_entry, gender_var,
                doctor_entry, doctor_id_entry, compile_notes, root, symptom_vars
            )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
+    
+    Button(form_frame, text="View Records", bg=BLUE, fg=WHITE,
+       font=("Segoe UI", 12, "bold"), width=20,
+       command=lambda: view_medical_records_gui("doctor")
+       ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
 
     root.mainloop()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     create_medical_record_gui()

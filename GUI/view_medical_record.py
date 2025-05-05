@@ -1,14 +1,15 @@
 from tkinter import *
-from tkinter import ttk, messagebox  
-from database.db_connection import get_connection  
+from tkinter import ttk, messagebox
+from database.db_connection import get_connection
+from create_medical_record import create_medical_record_gui  
 
 BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
-def view_medical_records_gui(user_type):
+def view_medical_records_gui(user_type="doctor"):
     try:
-        db = get_connection()  
+        db = get_connection()
         cursor = db.cursor()
     except Exception as e:
         messagebox.showerror("Database Error", f"Failed to connect to database:\n{e}")
@@ -25,7 +26,6 @@ def view_medical_records_gui(user_type):
     search_frame = Frame(root, bg=WHITE)
     search_frame.pack(pady=10)
 
-    # Patient ID input
     Label(search_frame, text="Patient ID:", font=FONT, bg=WHITE).pack(side=LEFT, padx=5)
     id_entry = Entry(search_frame, font=FONT, width=30)
     id_entry.pack(side=LEFT, padx=5)
@@ -58,6 +58,8 @@ def view_medical_records_gui(user_type):
     if user_type == "doctor":
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
 
+        Button(root, text="Back to Create Record", font=FONT, bg=BLUE, fg=WHITE, command=lambda: [root.destroy(), create_medical_record_gui()]).pack(pady=20)
+
     columns = ("ID", "Patient ID", "Doctor ID", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
     tree = ttk.Treeview(root, columns=columns, show="headings", height=20)
     for col in columns:
@@ -71,7 +73,7 @@ def view_medical_records_gui(user_type):
     db.close()
 
 if __name__ == "__main__":
-    view_medical_records_gui("doctor") 
+    view_medical_records_gui("doctor")
 
 if __name__ == "__main__":
     view_medical_records_gui("patient")
