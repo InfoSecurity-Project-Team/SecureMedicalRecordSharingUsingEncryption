@@ -21,7 +21,9 @@ def preprocess(dataframe : pd.DataFrame) -> pd.DataFrame:
 def diagnose(data: dict) -> str:
     dataframe = pd.DataFrame(data=data)
     model = pickle.load(open('disease_diagnosis_model.pkl', 'rb'))
-
+    df_processed = preprocess(dataframe)
+    prediction = model.predict(df_processed)
+    return prediction[0]
 
 
 def main():
