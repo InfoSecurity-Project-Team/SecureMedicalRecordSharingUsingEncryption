@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import datetime
-from db_connection import get_connection  
+from database.db_connection import get_connection
+from database.db_functions import get_patient_id_by_name
 
 BLUE = "#2685f6"
 WHITE = "white"
@@ -20,6 +21,10 @@ def submit_record(name, age, gender, symptoms, doctor_name, notes_func, window, 
             return
         cursor = conn.cursor()
 
+        patient_id = get_patient_id_by_name(name.get())
+        if not patient_id:
+            messagebox.showerror("Error", "Patient not found in the database.")
+            return
 
         query = """
             INSERT INTO diagnosis_records (
