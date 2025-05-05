@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import ttk
-from register_window import open_register_window
+from .register_window import open_register_window
 from database.db_functions import authenticate_user
 
 def open_dashboard():
