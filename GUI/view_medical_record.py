@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox  
-from db_connection import get_connection  
+from database.db_connection import get_connection  
 
 BLUE = "#2685f6"
 WHITE = "white"
