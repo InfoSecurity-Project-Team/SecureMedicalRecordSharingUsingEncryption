@@ -1,5 +1,6 @@
 from .db_connection import get_connection
 from crypto import encrypt_data, decrypt_data
+import datetime
 
 def authenticate_user(username, password, user_type):
     table = "doctors" if user_type.lower() == "doctor" else "patients"
@@ -97,6 +98,44 @@ def get_patient_id_by_name(patient_name):
     finally:
         if cursor: cursor.close()
         if conn: conn.close()
+
+
+def insert_encrypted_medical_record(
+    patient_id, doctor_id, age, gender,
+    symptoms, diagnosis, additional_notes=""
+):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+            INSERT INTO medical_records (
+                patient_id, doctor_id, age, gender,
+                symptoms, diagnosis, additional_notes, date
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+        data = (
+            patient_id,
+            doctor_id,
+            encrypt_data(str(age)),
+            gender,
+            encrypt_data(symptoms),
+            encrypt_data(diagnosis),
+            encrypt_data(additional_notes) if additional_notes else None,
+            datetime.datetime.now()
+        )
+
+        cursor.execute(query, data)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True
+
+    except Exception as e:
+        print("Error inserting encrypted medical record:", e)
+        return False
+
 
 
 
