@@ -27,7 +27,17 @@ def diagnose(data: dict) -> str:
 
 
 def main():
-    pass
+    d =  {
+        'Fever': ['Yes'],
+        'Cough': ['No'],
+        'Fatigue': ['No'],
+        'Difficulty Breathing': ['Yes'],
+        'Age': [20],
+        'Gender': ['Male'],
+        'Blood Pressure': ['Normal'],
+        'Cholesterol Level': ['High']
+    }
+    print(diagnose(d))
 
 if __name__ == '__main__':
     main()
