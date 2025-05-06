@@ -59,10 +59,9 @@ def view_medical_records_gui(user_type="doctor"):
     if user_type == "doctor":
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
         Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE, command=create_medical_record_gui).pack(side=LEFT, padx=5)
+        # Show the Back to Create Record button only for doctors
+        Button(root, text="Back to Create Record", font=FONT, bg=BLUE, fg=WHITE, command=lambda: [root.destroy(), create_medical_record_gui()]).pack(pady=20)
     
-    # Single "Back to Create Record" button outside the `if` block
-    Button(root, text="Back to Create Record", font=FONT, bg=BLUE, fg=WHITE, command=lambda: [root.destroy(), create_medical_record_gui()]).pack(pady=20)
-
     columns = ("ID", "Patient ID", "Doctor ID", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
     tree = ttk.Treeview(root, columns=columns, show="headings", height=20)
     for col in columns:
@@ -75,15 +74,5 @@ def view_medical_records_gui(user_type="doctor"):
     cursor.close()
     db.close()
 
-def insert_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosis, visit_date, doctor, notes):
-    try:
-        if isinstance(symptoms, str):
-            symptoms = symptoms.split(',')
-        insert_encrypted_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosis, visit_date, doctor, notes)
-        messagebox.showinfo("Success", "Medical record inserted successfully.")
-    except Exception as e:
-        messagebox.showerror("Insert Error", f"Failed to insert record:\n{e}")
-
 if __name__ == "__main__":
-    view_medical_records_gui("doctor")
-    view_medical_records_gui("patient")
+    view_medical_records_gui("doctor")  
