@@ -38,7 +38,6 @@ def view_medical_records_gui(user_type="doctor"):
             return
 
         try:
-            # Fetch encrypted records based on patient_id
             records = get_decrypted_medical_records(patient_id)
             tree.delete(*tree.get_children())
             for record in records:
@@ -48,7 +47,6 @@ def view_medical_records_gui(user_type="doctor"):
 
     def view_all_records():
         try:
-            # Fetch all encrypted records if no patient_id is provided
             records = get_decrypted_medical_records()
             tree.delete(*tree.get_children())
             for record in records:
@@ -60,8 +58,10 @@ def view_medical_records_gui(user_type="doctor"):
 
     if user_type == "doctor":
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
-
-        Button(root, text="Back to Create Record", font=FONT, bg=BLUE, fg=WHITE, command=lambda: [root.destroy(), create_medical_record_gui()]).pack(pady=20)
+        Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE, command=create_medical_record_gui).pack(side=LEFT, padx=5)
+    
+    # Single "Back to Create Record" button outside the `if` block
+    Button(root, text="Back to Create Record", font=FONT, bg=BLUE, fg=WHITE, command=lambda: [root.destroy(), create_medical_record_gui()]).pack(pady=20)
 
     columns = ("ID", "Patient ID", "Doctor ID", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
     tree = ttk.Treeview(root, columns=columns, show="headings", height=20)
@@ -77,11 +77,8 @@ def view_medical_records_gui(user_type="doctor"):
 
 def insert_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosis, visit_date, doctor, notes):
     try:
-        # Convert symptoms to list format if it's a string
         if isinstance(symptoms, str):
-            symptoms = symptoms.split(',')  # Split string into list
-        
-        # Insert encrypted record with Symptoms as a list
+            symptoms = symptoms.split(',')
         insert_encrypted_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosis, visit_date, doctor, notes)
         messagebox.showinfo("Success", "Medical record inserted successfully.")
     except Exception as e:
@@ -89,5 +86,4 @@ def insert_medical_record(patient_id, doctor_id, age, gender, symptoms, diagnosi
 
 if __name__ == "__main__":
     view_medical_records_gui("doctor")
-
     view_medical_records_gui("patient")

@@ -181,7 +181,5 @@ def create_medical_record_gui():
        command=view_medical_records_gui
        ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
 
-    root.mainloop()
-
 if __name__ == "__main__":
     create_medical_record_gui()
