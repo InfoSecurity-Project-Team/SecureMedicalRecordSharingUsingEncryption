@@ -177,9 +177,9 @@ def create_medical_record_gui():
            )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
 
     Button(form_frame, text="View Records", bg=BLUE, fg=WHITE,
-           font=("Segoe UI", 12, "bold"), width=20,
-           command=lambda: display_records(get_decrypted_medical_records(name_entry.get()))
-           ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
+       font=("Segoe UI", 12, "bold"), width=20,
+       command=view_medical_records_gui
+       ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
 
     root.mainloop()
 
