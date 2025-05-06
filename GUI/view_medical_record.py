@@ -2,13 +2,13 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from database.db_connection import get_connection
 from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_records
-from create_medical_record import create_medical_record_gui
 
 BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
 def view_medical_records_gui(user_type="doctor"):
+    from .create_medical_record import create_medical_record_gui
     try:
         db = get_connection()
         cursor = db.cursor()

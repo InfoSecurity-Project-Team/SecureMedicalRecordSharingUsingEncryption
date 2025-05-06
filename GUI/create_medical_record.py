@@ -4,7 +4,6 @@ from PIL import Image, ImageTk
 from database.db_connection import get_connection
 from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_records
 from ai_model.model import diagnose
-from view_medical_record import view_medical_records_gui
 
 BLUE = "#2685f6"
 WHITE = "white"
@@ -91,6 +90,7 @@ def display_records(records):
     record_window.mainloop()
 
 def create_medical_record_gui():
+    from .view_medical_record import view_medical_records_gui
     root = Tk()
     root.title("Create Medical Record")
     root.geometry('1250x780')
