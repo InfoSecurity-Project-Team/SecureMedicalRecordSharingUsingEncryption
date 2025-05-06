@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 from database.db_connection import get_connection
-from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_record
+from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_records
 from ai_model.model import diagnose
 from view_medical_record import view_medical_records_gui
 
@@ -178,7 +178,7 @@ def create_medical_record_gui():
 
     Button(form_frame, text="View Records", bg=BLUE, fg=WHITE,
            font=("Segoe UI", 12, "bold"), width=20,
-           command=lambda: display_records(get_decrypted_medical_record(name_entry.get()))
+           command=lambda: display_records(get_decrypted_medical_records(name_entry.get()))
            ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
 
     root.mainloop()
