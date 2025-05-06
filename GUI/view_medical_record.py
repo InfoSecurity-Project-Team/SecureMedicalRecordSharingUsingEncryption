@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk, messagebox
 from database.db_connection import get_connection
-from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_encrypted_medical_record
+from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_records
 from create_medical_record import create_medical_record_gui
 
 BLUE = "#2685f6"
@@ -39,7 +39,7 @@ def view_medical_records_gui(user_type="doctor"):
 
         try:
             # Fetch encrypted records based on patient_id
-            records = get_encrypted_medical_record(patient_id)
+            records = get_decrypted_medical_records(patient_id)
             tree.delete(*tree.get_children())
             for record in records:
                 tree.insert("", "end", values=record)
@@ -49,7 +49,7 @@ def view_medical_records_gui(user_type="doctor"):
     def view_all_records():
         try:
             # Fetch all encrypted records if no patient_id is provided
-            records = get_encrypted_medical_record()
+            records = get_decrypted_medical_records()
             tree.delete(*tree.get_children())
             for record in records:
                 tree.insert("", "end", values=record)
