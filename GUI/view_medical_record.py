@@ -1,7 +1,8 @@
+
 from tkinter import *
 from tkinter import ttk, messagebox
 from database.db_connection import get_connection
-from database.db_functions import get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_records
+from database.db_functions import get_decrypted_medical_records
 
 BLUE = "#2685f6"
 WHITE = "white"
@@ -9,6 +10,7 @@ FONT = ("Segoe UI", 11)
 
 def view_medical_records_gui(user_type="doctor"):
     from .create_medical_record import create_medical_record_gui
+
     try:
         db = get_connection()
         cursor = db.cursor()
@@ -36,7 +38,6 @@ def view_medical_records_gui(user_type="doctor"):
         if not patient_id:
             messagebox.showwarning("Input Error", "Please enter a patient ID to search.")
             return
-
         try:
             records = get_decrypted_medical_records(patient_id)
             tree.delete(*tree.get_children())
@@ -56,12 +57,12 @@ def view_medical_records_gui(user_type="doctor"):
 
     Button(search_frame, text="Search", font=FONT, bg=BLUE, fg=WHITE, command=search_records).pack(side=LEFT, padx=10)
 
-    if user_type == "doctor":
+    if user_type.lower() == "doctor":
+        print("Adding doctor buttons")  # Debug print
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
-        Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE, command=create_medical_record_gui).pack(side=LEFT, padx=5)
-        # Show the Back to Create Record button only for doctors
-        Button(root, text="Back to Create Record", font=FONT, bg=BLUE, fg=WHITE, command=lambda: [root.destroy(), create_medical_record_gui()]).pack(pady=20)
-    
+        Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE,
+           command=lambda: [root.destroy(), create_medical_record_gui()]).pack(side=LEFT, padx=5)
+
     columns = ("ID", "Patient ID", "Doctor ID", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
     tree = ttk.Treeview(root, columns=columns, show="headings", height=20)
     for col in columns:
@@ -73,6 +74,3 @@ def view_medical_records_gui(user_type="doctor"):
 
     cursor.close()
     db.close()
-
-if __name__ == "__main__":
-    view_medical_records_gui("doctor")  
