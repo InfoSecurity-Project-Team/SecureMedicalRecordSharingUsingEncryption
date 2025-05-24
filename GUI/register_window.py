@@ -34,12 +34,12 @@ def open_register_window():
     phone_frame.pack(pady=5)
 
     country_code_var = StringVar()
-    country_code_dropdown = ttk.Combobox(phone_frame, textvariable=country_code_var, state="readonly", width=6, font=('Arial', 11))
-    country_code_dropdown['values'] = ["+92", "+1", "+44", "+61", "+91", "+971"]
-    country_code_dropdown.set("+92")  # Default to Pakistan
+    country_code_dropdown = ttk.Combobox(phone_frame, textvariable=country_code_var, state="readonly", width=10, font=('Arial', 11))
+    country_code_dropdown['values'] = ["PAK(+92)", "USA(+1)", "UK(+44)", "AUS(+61)", "IND(+91)", "UAE(+971)"]
+    country_code_dropdown.set("PAK(+92)")  # Default to Pakistan
     country_code_dropdown.pack(side=LEFT, padx=(0, 5))
 
-    phone_entry = Entry(phone_frame, font=('Arial', 12), width=24)
+    phone_entry = Entry(phone_frame, font=('Arial', 12), width=30)
     phone_entry.pack(side=LEFT)
 
 
