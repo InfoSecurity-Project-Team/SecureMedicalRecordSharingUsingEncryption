@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import re
 from database.db_functions import register_user
 
 def open_register_window():
@@ -35,7 +34,11 @@ def open_register_window():
 
     country_code_var = StringVar()
     country_code_dropdown = ttk.Combobox(phone_frame, textvariable=country_code_var, state="readonly", width=10, font=('Arial', 11))
-    country_code_dropdown['values'] = ["PAK(+92)", "USA(+1)", "UK(+44)", "AUS(+61)", "IND(+91)", "UAE(+971)"]
+    country_code_dropdown['values'] = [
+        "PAK(+92)", "USA(+1)", "UK(+44)", "AUS(+61)", "IND(+91)", "UAE(+971)",
+        "CAN(+1)", "SA(+966)", "AFG(+93)", "BAN(+880)", "GER(+49)"
+    ]
+
     country_code_dropdown.set("PAK(+92)")  # Default to Pakistan
     country_code_dropdown.pack(side=LEFT, padx=(0, 5))
 
@@ -60,14 +63,17 @@ def open_register_window():
             messagebox.showerror("Error", "Phone number must contain only digits.")
             return
 
-        # Country-specific phone number length validation
         valid_lengths = {
-            "+92": 10,  # Pakistan: 10 digits after +92
-            "+1": 10,  # USA: 10 digits
-            "+44": 10,  # UK (simplified): 10 digits after +44
-            "+61": 9,  # Australia: 9 digits
-            "+91": 10,  # India: 10 digits
-            "+971": 9  # UAE: 9 digits
+            "+92": 10,  # Pakistan
+            "+1": 10,  # USA/Canada
+            "+44": 10,  # UK
+            "+61": 9,  # Australia
+            "+91": 10,  # India
+            "+971": 9,  # UAE
+            "+966": 9,  # Saudi Arabia
+            "+93": 9,  # Afghanistan
+            "+880": 10,  # Bangladesh
+            "+49": 10  # Germany
         }
 
         expected_length = valid_lengths.get(country_code)
