@@ -1,2 +1,2 @@
-from .db_functions import authenticate_user, register_user
+from .db_functions import authenticate_user, register_user, get_patient_id_by_name, insert_encrypted_medical_record, get_decrypted_medical_records
 from .db_connection import get_connection
