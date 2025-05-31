@@ -1,15 +1,18 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from database import (authenticate_user, register_user, get_patient_id_by_name,
-                         insert_encrypted_medical_record, get_decrypted_medical_records)
-from crypto import decrypt_data, encrypt_data
+from database.db_functions import (
+    authenticate_user, register_user,
+    get_patient_id_by_name, insert_encrypted_medical_record,
+    get_decrypted_medical_records
+)
 
 # Sample fake encrypted/decrypted data
 ENCRYPTED = lambda x: f"enc({x})"
 DECRYPTED = lambda x: x.replace("enc(", "").replace(")", "")
 
-@patch("database.get_connection")
-@patch("crypto.decrypt_data", side_effect=DECRYPTED)
+
+@patch("database.db_functions.get_connection")
+@patch("database.db_functions.decrypt_data", side_effect=DECRYPTED)
 def test_authenticate_user(mock_decrypt, mock_get_conn):
     # Mock cursor and connection
     mock_cursor = MagicMock()
@@ -24,18 +27,21 @@ def test_authenticate_user(mock_decrypt, mock_get_conn):
     mock_get_conn.return_value = mock_conn
 
     result = authenticate_user("alice", "password123", "doctor")
+
     assert result['name'] == "alice"
     assert result['phone'] == "1234567890"
     assert result['user_type'] == "doctor"
+    assert result['id'] == 1
 
 
-@patch("database.get_connection")
-@patch("crypto.encrypt_data", side_effect=ENCRYPTED)
-@patch("crypto.decrypt_data", side_effect=DECRYPTED)
+@patch("database.db_functions.get_connection")
+@patch("database.db_functions.encrypt_data", side_effect=ENCRYPTED)
+@patch("database.db_functions.decrypt_data", side_effect=DECRYPTED)
 def test_register_user_success(mock_decrypt, mock_encrypt, mock_get_conn):
     mock_cursor = MagicMock()
-    mock_cursor.fetchall.return_value = [(ENCRYPTED("bob"),)]
-    mock_get_conn.return_value = MagicMock(cursor=MagicMock(return_value=mock_cursor))
+    mock_conn = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_get_conn.return_value = mock_conn
 
     # Test user does not exist
     mock_cursor.fetchall.return_value = []
@@ -46,8 +52,8 @@ def test_register_user_success(mock_decrypt, mock_encrypt, mock_get_conn):
     assert register_user("bob", "pw", "9876543210", "doctor") == "exists"
 
 
-@patch("database.get_connection")
-@patch("crypto.decrypt_data", side_effect=DECRYPTED)
+@patch("database.db_functions.get_connection")
+@patch("database.db_functions.decrypt_data", side_effect=DECRYPTED)
 def test_get_patient_id_by_name(mock_decrypt, mock_get_conn):
     mock_cursor = MagicMock()
     mock_cursor.fetchall.return_value = [{'patient_id': 42, 'name': ENCRYPTED("charlie")}]
@@ -59,8 +65,8 @@ def test_get_patient_id_by_name(mock_decrypt, mock_get_conn):
     assert result == 42
 
 
-@patch("database.get_connection")
-@patch("crypto.encrypt_data", side_effect=ENCRYPTED)
+@patch("database.db_functions.get_connection")
+@patch("database.db_functions.encrypt_data", side_effect=ENCRYPTED)
 def test_insert_encrypted_medical_record(mock_encrypt, mock_get_conn):
     mock_cursor = MagicMock()
     mock_conn = MagicMock()
@@ -74,18 +80,22 @@ def test_insert_encrypted_medical_record(mock_encrypt, mock_get_conn):
     assert success is True
 
 
-@patch("database.get_connection")
-@patch("crypto.decrypt_data", side_effect=DECRYPTED)
+@patch("database.db_functions.get_connection")
+@patch("database.db_functions.decrypt_data", side_effect=DECRYPTED)
 def test_get_decrypted_medical_records(mock_decrypt, mock_get_conn):
     mock_cursor = MagicMock()
     mock_cursor.fetchall.return_value = [
-        (1, 1, 2, ENCRYPTED("45"), "Male", ENCRYPTED("fever, cough"), ENCRYPTED("Flu"), "2024-01-01", ENCRYPTED("Dr. A"), ENCRYPTED("Notes"))
+        (1, 1, 2, ENCRYPTED("Dr. A"), ENCRYPTED("45"), "Male", ENCRYPTED("fever, cough"),
+         ENCRYPTED("Flu"), ENCRYPTED("Notes"), "2024-01-01")
     ]
     mock_conn = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
     mock_get_conn.return_value = mock_conn
 
-    results = get_decrypted_medical_records(patient_id=1)
-    assert results[0][3] == "45"  # age
-    assert "fever" in results[0][5]
-    assert "Flu" in results[0][6]
+    records = get_decrypted_medical_records(patient_id=1)
+    assert len(records) == 1
+    assert records[0][3] == "45"           # age
+    assert records[0][5] == "fever, cough" # symptoms
+    assert records[0][6] == "Flu"          # diagnosis
+    assert records[0][8] == "Dr. A"        # doctor_name
+    assert records[0][9] == "Notes"        # additional_notes
