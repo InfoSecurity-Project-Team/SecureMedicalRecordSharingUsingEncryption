@@ -8,6 +8,16 @@ BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
+# Non-GUI helper functions (testable)
+def search_records_by_patient_id(patient_id):
+    patient_id = patient_id.strip()
+    if not patient_id:
+        raise ValueError("Patient ID cannot be empty.")
+    return get_decrypted_medical_records(patient_id)
+
+def fetch_all_records():
+    return get_decrypted_medical_records()
+
 def view_medical_records_gui(user_type="doctor"):
     from .create_medical_record import create_medical_record_gui
 
@@ -39,7 +49,7 @@ def view_medical_records_gui(user_type="doctor"):
             messagebox.showwarning("Input Error", "Please enter a patient ID to search.")
             return
         try:
-            records = get_decrypted_medical_records(patient_id)
+            records = search_records_by_patient_id(patient_id)  # using helper
             tree.delete(*tree.get_children())
             for record in records:
                 tree.insert("", "end", values=record)
@@ -48,12 +58,13 @@ def view_medical_records_gui(user_type="doctor"):
 
     def view_all_records():
         try:
-            records = get_decrypted_medical_records()
+            records = fetch_all_records()  # using helper
             tree.delete(*tree.get_children())
             for record in records:
                 tree.insert("", "end", values=record)
         except Exception as e:
             messagebox.showerror("Database Error", f"Failed to fetch all records:\n{e}")
+
 
     Button(search_frame, text="Search", font=FONT, bg=BLUE, fg=WHITE, command=search_records).pack(side=LEFT, padx=10)
 
