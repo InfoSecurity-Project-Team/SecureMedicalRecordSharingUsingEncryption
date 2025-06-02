@@ -137,15 +137,15 @@ def create_login_frame():
             messagebox.showerror("Error", "Incorrect username or password.")
 
     Button(pat_frame, width=12, height=2, border=0, bg='#2685f6', fg='white',
-           cursor='hand2', text='Request OTP', font=('Arial', 10, 'bold'), command=request_otp).place(x=215, y=450)
+           cursor='hand2', text='Request OTP', font=('Arial', 10, 'bold'), command=request_otp).place(x=320, y=475)
 
     Button(pat_frame, width=12, height=2, border=0, bg='#2685f6', fg='white',
-           cursor='hand2', text='Login', font=('Arial', 10, 'bold'), command=login).place(x=25, y=450)
+           cursor='hand2', text='Login', font=('Arial', 10, 'bold'), command=login).place(x=130, y=475)
 
-    Label(pat_frame, text="Don't have an account? ", fg='black', bg='white', font=('Arial', 10, 'bold')).place(x=120, y=410)
+    Label(pat_frame, text="Don't have an account? ", fg='black', bg='white', font=('Arial', 10, 'bold')).place(x=120, y=425)
 
     Button(pat_frame, width=7, height=2, border=0, bg='white', fg='#2685f6',
-           cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=lambda: [root.destroy(), open_register_window()]).place(x=290, y=401)
+           cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=lambda: [root.destroy(), open_register_window()]).place(x=290, y=416)
 
 create_login_frame()
 root.mainloop()
