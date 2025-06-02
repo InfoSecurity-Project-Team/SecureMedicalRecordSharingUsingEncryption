@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from database.db_functions import register_user
 
-def open_register_window():
+def open_register_window(parent_root):
     register_window = Tk()
     register_window.title("Register")
     register_window.geometry("450x500")
@@ -102,7 +102,7 @@ def open_register_window():
            width=15, command=validate_and_register).pack(pady=15)
 
     Button(register_window, text="Login", bg='#2685f6', fg='white', font=('Arial', 11, 'bold'),
-           border=0, command=lambda: [register_window.destroy(), open_login_window()]).place(x=15, y=15)
+           border=0, command=lambda: [register_window.destroy(), parent_root.deiconify()]).place(x=15, y=15)
 
     register_window.mainloop()
 
