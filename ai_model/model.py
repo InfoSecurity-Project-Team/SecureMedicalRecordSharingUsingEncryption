@@ -26,8 +26,9 @@ def diagnose(data: dict) -> str:
     :return: str: Disease name
     """
     dataframe = pd.DataFrame(data=data)
-    mmodel_path = os.path.join(os.path.dirname(__file__), 'disease_diagnosis_model.pkl')
-    with open(r"C:\Users\Thinkpad T480\OneDrive\Documents\GitHub\SecureMedicalRecordSharingUsingEncryption\ai_model\disease_diagnosis_model.pkl", 'rb') as f:
+    model_path = os.path.join(os.path.dirname(__file__), 'disease_diagnosis_model.pkl')
+    with open(model_path, 'rb') as f:
+
         model = pickle.load(f)
     df_processed = preprocess(dataframe)
     prediction = model.predict(df_processed)
