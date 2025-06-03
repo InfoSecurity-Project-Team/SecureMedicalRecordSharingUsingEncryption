@@ -4,7 +4,8 @@ from tkinter import messagebox
 from database.db_functions import register_user
 
 def open_register_window(parent_root):
-    register_window = Tk()
+    parent_root.withdraw()  # hide the login window temporarily
+    register_window = Toplevel(parent_root)  # ✅ use Toplevel, not Tk
     register_window.title("Register")
     register_window.geometry("450x500")
     register_window.configure(bg='white')
@@ -45,15 +46,21 @@ def open_register_window(parent_root):
     phone_entry = Entry(phone_frame, font=('Arial', 12), width=30)
     phone_entry.pack(side=LEFT)
 
-
     def validate_and_register():
+        import re  # make sure re is imported
         username = username_entry.get().strip()
         password = password_entry.get().strip()
         raw_phone = phone_entry.get().strip()
-        country_code = country_code_var.get()
+        selected_country = country_code_dropdown.get()
         user_type = user_type_var.get()
 
-        phone = f"{country_code}{raw_phone}"
+        # Extract the country code using regex
+        match = re.search(r'\((\+\d+)\)', selected_country)
+        if not match:
+            messagebox.showerror("Error", f"Invalid country code format: {selected_country}")
+            return
+
+        country_code = match.group(1)
 
         if not username or not password or not raw_phone or user_type == "Select User Type":
             messagebox.showerror("Error", "All fields are required!")
@@ -64,29 +71,21 @@ def open_register_window(parent_root):
             return
 
         valid_lengths = {
-            "+92": 10,  # Pakistan
-            "+1": 10,  # USA/Canada
-            "+44": 10,  # UK
-            "+61": 9,  # Australia
-            "+91": 10,  # India
-            "+971": 9,  # UAE
-            "+966": 9,  # Saudi Arabia
-            "+93": 9,  # Afghanistan
-            "+880": 10,  # Bangladesh
-            "+49": 10  # Germany
+            "+92": 10, "+1": 10, "+44": 10, "+61": 9, "+91": 10,
+            "+971": 9, "+966": 9, "+93": 9, "+880": 10, "+49": 10
         }
 
         expected_length = valid_lengths.get(country_code)
-
         if expected_length is None:
             messagebox.showerror("Error", f"Unsupported country code: {country_code}")
             return
 
         if len(raw_phone) != expected_length:
-            messagebox.showerror("Error", f"Phone number for {country_code} must be {expected_length+1} digits long.")
+            messagebox.showerror("Error", f"Phone number for {country_code} must be {expected_length} digits long.")
             return
 
-        # Register the user
+        phone = f"{country_code}{raw_phone}"
+
         result = register_user(username, password, phone, user_type)
 
         if result == "exists":
@@ -94,7 +93,7 @@ def open_register_window(parent_root):
         elif result == "success":
             messagebox.showinfo("Success", "Registration Successful!")
             register_window.destroy()
-            open_login_window()
+            parent_root.deiconify()
         else:
             messagebox.showerror("Error", "Registration failed. Please try again.")
 
@@ -104,7 +103,7 @@ def open_register_window(parent_root):
     Button(register_window, text="Login", bg='#2685f6', fg='white', font=('Arial', 11, 'bold'),
            border=0, command=lambda: [register_window.destroy(), parent_root.deiconify()]).place(x=15, y=15)
 
-    register_window.mainloop()
+
 
 def open_login_window():
     from .login import create_login_frame
