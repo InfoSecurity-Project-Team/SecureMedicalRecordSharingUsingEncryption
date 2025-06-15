@@ -71,8 +71,6 @@ def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, w
         else:
             messagebox.showwarning("Warning", "Record saved in diagnosis_records but not encrypted in blockchain.")
 
-        window.destroy()
-
     except Exception as e:
         messagebox.showerror("Error", f"Failed to save record: {e}")
 
