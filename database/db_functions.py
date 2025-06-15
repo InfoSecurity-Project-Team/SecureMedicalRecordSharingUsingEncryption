@@ -38,7 +38,7 @@ def authenticate_user(username, password, user_type):
 
 
 
-def register_user(username, password, phone, user_type):
+def register_user(username, password, phone, email, user_type):
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -54,14 +54,17 @@ def register_user(username, password, phone, user_type):
             if decrypted_name == username:
                 return "exists"
 
-        # Encrypt the input values
+        # Encrypt the input values (except email)
         encrypted_username = encrypt_data(username)
         encrypted_password = encrypt_data(password)
         encrypted_phone = encrypt_data(phone)
 
-        # Insert new user
-        insert_query = f"INSERT INTO {table} (name, password, phone) VALUES (%s, %s, %s)"
-        cursor.execute(insert_query, (encrypted_username, encrypted_password, encrypted_phone))
+        # Insert new user (email is stored as plain text)
+        insert_query = f"""
+            INSERT INTO {table} (name, password, phone, email)
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(insert_query, (encrypted_username, encrypted_password, encrypted_phone, email))
         conn.commit()
 
         return "success"
