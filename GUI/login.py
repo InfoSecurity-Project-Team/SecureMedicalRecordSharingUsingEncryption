@@ -6,7 +6,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import ttk
 from .register_window import open_register_window
-from database.db_functions import authenticate_user
+from database.db_functions import authenticate_user, get_email_by_username
 from .create_medical_record import create_medical_record_gui
 from .view_medical_record import view_medical_records_gui
 from send_otp_email import generate_otp, send_otp_email, is_otp_valid
@@ -83,14 +83,22 @@ def create_login_frame():
 
     def request_otp():
         global otp_code
-        entered_email = email.get("1.0", "end-1c").strip()
-        print("Email entered by user:", entered_email)
-        if entered_email == "Enter your email" or not entered_email:
-            messagebox.showerror("Error", "Please enter your email address.")
+        entered_user = username.get("1.0", "end-1c").strip()
+        selected_user_type = user_type_var.get()
+
+        if not entered_user or selected_user_type == "Select User Type":
+            messagebox.showerror("Error", "Please enter username and select user type first.")
+            return
+
+        # Fetch email from database
+        email_from_db = get_email_by_username(entered_user, selected_user_type)
+        if not email_from_db:
+            messagebox.showerror("Error", f"No email found for username '{entered_user}'.")
             return
 
         otp_code = generate_otp()
-        otp_sent = send_otp_email(entered_email, otp_code)
+        otp_sent = send_otp_email(email_from_db, otp_code)
+
         if otp_sent:
             messagebox.showinfo("OTP Sent", "OTP sent to your email.")
         else:
