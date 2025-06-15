@@ -196,4 +196,29 @@ def get_decrypted_medical_records(patient_id=None):
 
 
 
+def get_email_by_username(username, user_type):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    table = "patients" if user_type.lower() == "patient" else "doctors"
+
+    try:
+        cursor.execute(f"SELECT name, email FROM {table}")
+        records = cursor.fetchall()
+
+        for record in records:
+            decrypted_name = decrypt_data(record['name'])
+            if decrypted_name == username:
+                return record['email']
+
+    except Exception as e:
+        print(f"Database error while fetching email: {e}")
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return None
+
+
 
