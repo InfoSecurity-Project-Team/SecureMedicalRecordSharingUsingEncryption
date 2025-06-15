@@ -9,8 +9,8 @@ BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
-def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, window, symptom_vars):
-    if not all([name.get(), age.get(), gender.get(), doctor_name.get(), doctor_id_entry.get()]):
+def submit_record(name, age, gender, notes_func, window, symptom_vars):
+    if not all([name.get(), age.get(), gender.get()]):
         messagebox.showwarning("Warning", "Please fill in all fields.")
         return
 
@@ -58,7 +58,6 @@ def submit_record(name, age, gender, doctor_name, doctor_id_entry, notes_func, w
         # Insert the medical record into the encrypted database
         encrypted_success = insert_encrypted_medical_record(
             patient_id=patient_id,
-            doctor_id=doctor_id_entry.get(),
             age=age.get(),
             gender=gender.get(),
             symptoms=symptom_list,
@@ -125,7 +124,7 @@ def create_medical_record_gui():
     age_entry = form_entry(2)
 
     form_label("Gender:", 3)
-    gender_var = StringVar()
+    gender_var = StringVar(value="Male")  # Set default to avoid empty value
     gender_frame = Frame(form_frame, bg=WHITE)
     gender_frame.grid(row=3, column=1, pady=5, sticky="w")
     Radiobutton(gender_frame, text="Male", variable=gender_var, value="Male", font=FONT, bg=WHITE).pack(side=LEFT)
@@ -154,12 +153,6 @@ def create_medical_record_gui():
 
     next_row = row_offset + len(symptom_questions)
 
-    form_label("Doctor Name:", next_row)
-    doctor_entry = form_entry(next_row)
-
-    form_label("Doctor ID:", next_row + 1)
-    doctor_id_entry = form_entry(next_row + 1)
-
     form_label("Additional Notes:", next_row + 2)
     notes_text = Text(form_frame, font=FONT, height=3, width=30, bd=1, relief="solid")
     notes_text.grid(row=next_row + 2, column=1, pady=5)
@@ -171,7 +164,7 @@ def create_medical_record_gui():
            font=("Segoe UI", 12, "bold"), width=20,
            command=lambda: submit_record(
                name_entry, age_entry, gender_var,
-               doctor_entry, doctor_id_entry, compile_notes, root, symptom_vars
+               compile_notes, root, symptom_vars
            )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
 
     Button(form_frame, text="View Records", bg=BLUE, fg=WHITE,
