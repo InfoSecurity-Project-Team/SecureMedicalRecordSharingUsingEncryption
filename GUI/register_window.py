@@ -29,8 +29,8 @@ def open_register_window(parent_root):
     password_entry.pack(pady=5)
 
     Label(register_window, text="Email:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
-    password_entry = Entry(register_window, font=('Arial', 12), width=32)
-    password_entry.pack(pady=5)
+    email_entry = Entry(register_window, font=('Arial', 12), width=32)
+    email_entry.pack(pady=5)
 
 
     Label(register_window, text="Phone Number:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
@@ -59,6 +59,7 @@ def open_register_window(parent_root):
         raw_phone = phone_entry.get().strip()
         selected_country = country_code_dropdown.get()
         user_type = user_type_var.get()
+        email = email_entry.get().strip()
 
         # Extract the country code using regex
         match = re.search(r'\((\+\d+)\)', selected_country)
@@ -68,8 +69,12 @@ def open_register_window(parent_root):
 
         country_code = match.group(1)
 
-        if not username or not password or not raw_phone or user_type == "Select User Type":
+        if not username or not password or not raw_phone or not email or user_type == "Select User Type":
             messagebox.showerror("Error", "All fields are required!")
+            return
+
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w{2,4}$", email):
+            messagebox.showerror("Error", "Invalid email format.")
             return
 
         if not raw_phone.isdigit():
@@ -92,7 +97,7 @@ def open_register_window(parent_root):
 
         phone = f"{country_code}{raw_phone}"
 
-        result = register_user(username, password, phone, user_type)
+        result = register_user(username, password, phone, email, user_type)
 
         if result == "exists":
             messagebox.showerror("Error", "User already registered!")
