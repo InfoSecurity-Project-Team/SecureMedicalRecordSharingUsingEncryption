@@ -16,7 +16,7 @@ otp_code = None
 
 root = Tk()
 root.title("Medical Records")
-root.geometry('1225x700')
+root.geometry('1225x800')
 root.configure(bg='white')
 root.resizable(False, False)
 
@@ -73,26 +73,18 @@ def create_login_frame():
     add_placeholder(password, "Enter password")
     Frame(pat_frame, width=350, height=2, bg='black').place(x=100, y=270)
 
-    email_label = Label(pat_frame, text="Email:", fg='#2685f6', bg='white', font=('Arial', 12, 'bold'))
-    email_label.place(x=10, y=320)
-
-    email = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
-    email.place(x=100, y=320)
-    add_placeholder(email, "Enter your email")
-    Frame(pat_frame, width=350, height=2, bg='black').place(x=100, y=340)
-
     otp_label = Label(pat_frame, text="OTP:", fg='#2685f6', bg='white', font=('Arial', 12, 'bold'))
-    otp_label.place(x=10, y=380)
+    otp_label.place(x=10, y=320)
 
     otp_entry = Text(pat_frame, width=38, height=1, fg='black', border=0, bg='white', font=('Arial', 12))
-    otp_entry.place(x=100, y=380)
+    otp_entry.place(x=100, y=320)
     add_placeholder(otp_entry, "Enter OTP")
-    Frame(pat_frame, width=350, height=2, bg='black').place(x=100, y=400)
+    Frame(pat_frame, width=350, height=2, bg='black').place(x=100, y=340)
 
     def request_otp():
         global otp_code
-        entered_email = email.get("1.0", "end-1c").strip()  # ✅ Define the variable first
-        print("Email entered by user:", entered_email)      # ✅ Now it's safe to use
+        entered_email = email.get("1.0", "end-1c").strip()
+        print("Email entered by user:", entered_email)
         if entered_email == "Enter your email" or not entered_email:
             messagebox.showerror("Error", "Please enter your email address.")
             return
@@ -142,10 +134,10 @@ def create_login_frame():
     Button(pat_frame, width=12, height=2, border=0, bg='#2685f6', fg='white',
            cursor='hand2', text='Login', font=('Arial', 10, 'bold'), command=login).place(x=130, y=475)
 
-    Label(pat_frame, text="Don't have an account? ", fg='black', bg='white', font=('Arial', 10, 'bold')).place(x=120, y=425)
+    Label(pat_frame, text="Don't have an account? ", fg='black', bg='white', font=('Arial', 10, 'bold')).place(x=120, y=375)
 
     Button(pat_frame, width=7, height=2, border=0, bg='white', fg='#2685f6',
-           cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=lambda: [root.withdraw(), open_register_window(root)]).place(x=290, y=416)
+           cursor='hand2', text='Register', font=('Arial', 10, 'bold'), command=lambda: [root.withdraw(), open_register_window(root)]).place(x=290, y=366)
 
 create_login_frame()
 root.mainloop()

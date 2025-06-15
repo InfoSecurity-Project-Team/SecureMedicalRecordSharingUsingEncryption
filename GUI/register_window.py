@@ -4,10 +4,10 @@ from tkinter import messagebox
 from database.db_functions import register_user
 
 def open_register_window(parent_root):
-    parent_root.withdraw()  # hide the login window temporarily
-    register_window = Toplevel(parent_root)  # ✅ use Toplevel, not Tk
+    parent_root.withdraw()
+    register_window = Toplevel(parent_root)
     register_window.title("Register")
-    register_window.geometry("450x500")
+    register_window.geometry("450x600")
     register_window.configure(bg='white')
     register_window.resizable(False, False)
 
@@ -28,10 +28,16 @@ def open_register_window(parent_root):
     password_entry = Entry(register_window, font=('Arial', 12), width=32, show="*")
     password_entry.pack(pady=5)
 
+    Label(register_window, text="Email:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
+    password_entry = Entry(register_window, font=('Arial', 12), width=32)
+    password_entry.pack(pady=5)
+
+
     Label(register_window, text="Phone Number:", bg='white', font=('Arial', 12)).pack(pady=(10, 5))
 
     phone_frame = Frame(register_window, bg='white')
     phone_frame.pack(pady=5)
+
 
     country_code_var = StringVar()
     country_code_dropdown = ttk.Combobox(phone_frame, textvariable=country_code_var, state="readonly", width=10, font=('Arial', 11))
@@ -98,7 +104,7 @@ def open_register_window(parent_root):
             messagebox.showerror("Error", "Registration failed. Please try again.")
 
     Button(register_window, text="Register", bg='#2685f6', fg='white', font=('Arial', 12, 'bold'),
-           width=15, command=validate_and_register).pack(pady=15)
+           width=15, command=validate_and_register).pack(pady=55)
 
     Button(register_window, text="Login", bg='#2685f6', fg='white', font=('Arial', 11, 'bold'),
            border=0, command=lambda: [register_window.destroy(), parent_root.deiconify()]).place(x=15, y=15)
