@@ -2,6 +2,7 @@ import smtplib
 import random
 from email.message import EmailMessage
 from datetime import datetime, timedelta
+#import string
 
 # Store OTP and timestamp globally
 otp_store = {
@@ -10,6 +11,10 @@ otp_store = {
 }
 def generate_otp():
     otp = ''.join(str(random.randint(0, 9)) for _ in range(6))
+
+#def generate_otp(length=6):
+#    characters = string.ascii_letters + string.digits  # A-Z, a-z, 0-9
+#    otp = ''.join(random.choices(characters, k=length))
     print("Generated OTP:", otp)
     otp_store['otp'] = otp
     otp_store['timestamp'] = datetime.now()
