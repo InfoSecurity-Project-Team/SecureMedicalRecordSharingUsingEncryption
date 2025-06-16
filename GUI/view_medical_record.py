@@ -51,19 +51,9 @@ def view_medical_records_gui(user):
         tree.heading(col, text=col)
         tree.column(col, width=120, anchor="w")
     tree.pack(padx=10, pady=10, fill=BOTH, expand=True)
-    
-    def search_records():
-        patient_id = id_entry.get().strip()
-        if not patient_id:
-            messagebox.showwarning("Input Error", "Please enter a patient ID to search.")
-            return
-        try:
-            records = search_records_by_patient_id(patient_id)  # using helper
-            tree.delete(*tree.get_children())
-            for record in records:
-                tree.insert("", "end", values=record)
-        except Exception as e:
-            messagebox.showerror("Database Error", f"Failed to search records:\n{e}")
+
+    def logout():
+        root.destroy()
 
     def view_all_records():
         try:
@@ -74,14 +64,13 @@ def view_medical_records_gui(user):
         except Exception as e:
             messagebox.showerror("Database Error", f"Failed to fetch all records:\n{e}")
 
-
-    Button(search_frame, text="Search", font=FONT, bg=BLUE, fg=WHITE, command=search_records).pack(side=LEFT, padx=10)
-
     if user_type.lower() == "doctor":
         print("Adding doctor buttons")  # Debug print
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
         Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE,
             command=lambda: [root.destroy(), create_medical_record_gui(doctor_id)]).pack(side=LEFT, padx=5)
+
+
     else:
     # If patient, auto-load their records
         try:
@@ -94,7 +83,7 @@ def view_medical_records_gui(user):
         except Exception as e:
             messagebox.showerror("Database Error", f"Failed to load your records:\n{e}")
 
-
+    Button(search_frame, text="Logout", font=FONT, bg="red", fg=WHITE, command=logout).pack(side=LEFT, padx=5)
     root.mainloop()
 
     cursor.close()
