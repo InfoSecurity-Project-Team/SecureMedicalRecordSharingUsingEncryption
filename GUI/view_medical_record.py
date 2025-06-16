@@ -18,7 +18,9 @@ def search_records_by_patient_id(patient_id):
 def fetch_all_records():
     return get_decrypted_medical_records()
 
-def view_medical_records_gui(user_type="doctor"):
+def view_medical_records_gui(user):
+    user_type = user["user_type"]
+    doctor_id = user["id"]
     from .create_medical_record import create_medical_record_gui
 
     try:
@@ -72,7 +74,7 @@ def view_medical_records_gui(user_type="doctor"):
         print("Adding doctor buttons")  # Debug print
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
         Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE,
-           command=lambda: [root.destroy(), create_medical_record_gui()]).pack(side=LEFT, padx=5)
+            command=lambda: [root.destroy(), create_medical_record_gui(doctor_id)]).pack(side=LEFT, padx=5)
 
     columns = ("ID", "Patient ID", "Doctor ID", "Age", "Gender", "Symptoms", "Diagnosis", "Visit Date", "Doctor", "Notes")
     tree = ttk.Treeview(root, columns=columns, show="headings", height=20)

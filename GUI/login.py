@@ -132,7 +132,7 @@ def create_login_frame():
         user = authenticate_user(entered_user, entered_pass, selected_user_type)
         if user:
             root.destroy()
-            view_medical_records_gui(user_type=selected_user_type)
+            view_medical_records_gui(user)
         else:
             messagebox.showerror("Error", "Incorrect username or password.")
 

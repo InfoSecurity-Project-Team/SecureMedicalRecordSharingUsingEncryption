@@ -9,7 +9,7 @@ BLUE = "#2685f6"
 WHITE = "white"
 FONT = ("Segoe UI", 11)
 
-def submit_record(name, age, gender, notes_func, window, symptom_vars):
+def submit_record(name, age, gender, notes_func, window, symptom_vars, doctor_id):
     if not all([name.get(), age.get(), gender.get()]):
         messagebox.showwarning("Warning", "Please fill in all fields.")
         return
@@ -58,6 +58,7 @@ def submit_record(name, age, gender, notes_func, window, symptom_vars):
         # Insert the medical record into the encrypted database
         encrypted_success = insert_encrypted_medical_record(
             patient_id=patient_id,
+            doctor_id=doctor_id,
             age=age.get(),
             gender=gender.get(),
             symptoms=symptom_list,
@@ -86,7 +87,7 @@ def display_records(records):
     
     record_window.mainloop()
 
-def create_medical_record_gui():
+def create_medical_record_gui(doctor_id):
     from .view_medical_record import view_medical_records_gui
     root = Tk()
     root.title("Create Medical Record")
@@ -164,13 +165,14 @@ def create_medical_record_gui():
            font=("Segoe UI", 12, "bold"), width=20,
            command=lambda: submit_record(
                name_entry, age_entry, gender_var,
-               compile_notes, root, symptom_vars
+               compile_notes, root, symptom_vars, doctor_id
            )).grid(row=next_row + 3, column=0, columnspan=2, pady=20)
 
     Button(form_frame, text="View Records", bg=BLUE, fg=WHITE,
        font=("Segoe UI", 12, "bold"), width=20,
-       command=view_medical_records_gui
+       command=lambda: [root.destroy(), view_medical_records_gui({"user_type": "doctor", "id": doctor_id})]
        ).grid(row=next_row + 4, column=0, columnspan=2, pady=10)
+
 
 if __name__ == "__main__":
     create_medical_record_gui()
