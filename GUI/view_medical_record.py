@@ -3,6 +3,9 @@ from tkinter import *
 from tkinter import ttk, messagebox
 from database.db_connection import get_connection
 from database.db_functions import get_decrypted_medical_records
+import subprocess
+import sys
+import os
 
 BLUE = "#2685f6"
 WHITE = "white"
@@ -54,6 +57,9 @@ def view_medical_records_gui(user):
 
     def logout():
         root.destroy()
+        python_executable = sys.executable
+        subprocess.Popen([python_executable, '-m', 'GUI.login'])
+
 
     def view_all_records():
         try:
@@ -65,7 +71,6 @@ def view_medical_records_gui(user):
             messagebox.showerror("Database Error", f"Failed to fetch all records:\n{e}")
 
     if user_type.lower() == "doctor":
-        print("Adding doctor buttons")  # Debug print
         Button(search_frame, text="View All", font=FONT, bg=BLUE, fg=WHITE, command=view_all_records).pack(side=LEFT, padx=5)
         Button(search_frame, text="Create Record", font=FONT, bg=BLUE, fg=WHITE,
             command=lambda: [root.destroy(), create_medical_record_gui(doctor_id)]).pack(side=LEFT, padx=5)
